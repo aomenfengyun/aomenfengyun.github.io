@@ -1,0 +1,297 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title></title>
+    <link rel="apple-touch-icon" sizes="152x152" href="app-icon.png"/>
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="apple-mobile-web-app-title" content="">
+    <meta name='apple-mobile-web-app-capable' content='yes'/>
+    <meta name='full-screen' content='true'/>
+    <meta name='screen-orientation' content='portrait'/>
+    <meta name='x5-fullscreen' content='true'/>
+    <meta name='360-fullscreen' content='true'/>
+    <meta http-equiv='expires' content='0'/>
+    <meta name='laya' logoimg='logo.png' logobkcolor='#ffffff' screenorientation='portrait' cacheid='fffffffff'/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            with: 100%;
+            height: 100%;
+            background-color: #000;
+        }
+
+        canvas {
+            margin: auto;
+        }
+
+        @-webkit-keyframes clouddownload {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 0 -1275px;
+            }
+        }
+
+        .initializing_bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url(assets/major/public/lobby_bg.png);
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: 50% 50%;
+            z-index: 1;
+        }
+
+        .initializing {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 242px;
+            height: 242px;
+            margin: -121px 0 0 -121px;
+            background: url(assets/major/common/loading/loadingbg.png);
+            z-index: 2;
+        }
+
+        .initializing:after {
+            content: "";
+            display: block;
+            width: 85px;
+            height: 85px;
+            margin: 75px;
+            background-image: url(assets/major/common/loading/clouddownload.png);
+            background-position: 0 0;
+            background-repeat: no-repeat;
+            -webkit-animation: clouddownload 2s steps(15) infinite;
+        }
+
+        #confirm_copy {
+            background-image: url('assets/major/public/background.png');
+            background-size: 100%, 100%;
+            width: 70%;
+            height: 25%;
+            background-repeat: no-repeat;
+            border-radius: 10px;
+            position: absolute;
+            top: 32%;
+            left: 15%;
+            display: none;
+            z-index: 4;
+        }
+
+        #my_H1 {
+            color: #F4DA9F;
+            position: absolute;
+            left: 23%;
+            top: 17%;
+            height: 15%;
+            width: 55%
+        }
+
+        #myShareUrl {
+            position: absolute;
+            right: 20000%;
+            display: none;
+        }
+
+        #my_button {
+            background-image: url('assets/major/public/button_2.png');
+            background-size: 120% 120%;
+            background-position: 50% 50%;
+            width: 40%;
+            height: 25%;
+            border: 2px solid #A68E6C;
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 65%;
+            left: 30%
+        }
+
+        #sure_lab_pic {
+            width: 50%;
+            height: 70%;
+        }
+
+        #qrcode {
+            position: absolute;
+            left: 40%;
+            top: 30%;
+            z-index: 5;
+            display: none;
+        }
+
+        #qrcode_bg {
+            position: absolute;
+            left: 35%;
+            top: 20%;
+            background-color: #ffffff;
+            width: 30%;
+            height: 60%;
+            z-index: 4;
+            display: none;
+        }
+
+        #qrcode_icon {
+            position: absolute;
+            left: 30%;
+            top: 8%;
+            width: 10%;
+            height: 9%;
+        }
+
+        #qrcode_name {
+            position: absolute;
+            left: 43%;
+            top: 10%;
+            width: 15%;
+            height: 5%;
+        }
+
+        #qrcode_dialog {
+            position: absolute;
+            left: 90%;
+            z-index: 5;
+            width: 10%;
+            height: 9%;
+        }
+
+        #my_button_close {
+            background-image: url("assets/major/qrCode/close.png");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: transparent;
+            border-style: none;
+            outline: none;
+            background-size: 80% 75%;
+            width: 100%;
+            height: 100%;
+        }
+
+        #my_button_close:active {
+            opacity: 0.8;
+        }
+
+        #qrcode_savebtn {
+            position: absolute;
+            left: 36%;
+            top: 64%;
+            z-index: 5;
+            width: 30%;
+            height: 9%;
+        }
+
+        #qrcode_savebtn_pic {
+            width: 100%;
+            height: 100%;
+            background-color: #C4781E;
+            background-position: center;
+            outline: none;
+            border-style: none;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 5px;
+        }
+
+        #qrcode_savebtn_pic:active {
+            background-color: gray;
+        }
+
+        #qrcode_help_pic {
+            position: absolute;
+            left: 7.5%;
+            top: 72%;
+            width: 85%;
+            height: 28%;
+        }
+
+        #save_pic_lab {
+            width: 80%;
+            height: 70%;
+        }
+
+    </style>
+    <script>window.rebateParentId = '{{.Token}}'</script>
+    <script>document.write('<script src="boot.js?t=' + Date.now() + '"></' + 'script>')</script>
+</head>
+<body>
+<div class="initializing_bg" id="init_bg"></div>
+<div class="initializing" id="init"></div>
+
+<div id="confirm_copy">
+    <img id="my_H1" src="assets/major/lobby/sp/game_spread/spread_url_tip.png"/>
+    <textarea id="myShareUrl" contenteditable="true"></textarea>
+    <button id="my_button" onClick="onClipboardCopy()" type="button">
+        <img id="sure_lab_pic" src="assets/major/public/sureBtnG.png"/>
+    </button>
+</div>
+
+
+<div id="qrcode_bg">
+    <!-- <div id="qrcode"> </div>-->
+    <img id="qrcode_icon" src="assets/major/bank/wechat.png"/>
+    <img id="qrcode_name" src="assets/major/qrCode/aliText.png"/>
+    <div id="qrcode_dialog">
+        <button id="my_button_close" onClick="closeQrcode()" type="button">
+        </button>
+    </div>
+    <div id="qrcode_savebtn">
+        <button id="qrcode_savebtn_pic" onClick="" type="button">
+            <img id="save_pic_lab" src="assets/major/qrCode/savePic.png"/>
+        </button>
+    </div>
+    <img id="qrcode_help_pic" src="assets/major/qrCode/weixin.png"/>
+</div>
+<div id="qrcode"></div>
+
+<script type="text/javascript">
+
+    function unlockLobby() {
+        Laya.stage.renderingEnabled = true;
+        window.lobbyisLock = false;
+    }
+
+    function isIOS() {
+        return navigator.userAgent.match(/ipad|iphone/i);
+    }
+
+    function onClipboardCopy() {
+        var taElement = document.getElementById("myShareUrl");
+        taElement.style.display = "inline";
+        if (isIOS()) {
+            var range = document.createRange();
+            range.selectNodeContents(taElement);
+            var selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            taElement.setSelectionRange(0, 999999);
+        } else {
+            taElement.select(); //选择对象
+        }
+        document.execCommand("Copy"); //执行浏览器复制命令
+        taElement.style.display = "none";
+
+        var dElement = document.getElementById("confirm_copy");
+        dElement.style.display = "none";
+        unlockLobby();
+    }
+    function closeQrcode() {
+        var root = document.getElementById("qrcode");
+
+        var childList = root.childNodes;
+        for (var i = childList.length - 1; i >= 0; i--) {
+            var childNode = childList[0]; //老是删除第一个，是不是更简朴
+            root.removeChild(childNode);
+        }
+        //document.getElementById("qrcode").style.display = "none";
+        document.getElementById("qrcode_bg").style.display = "none";
+        unlockLobby();
+    }
+</script>
+</body>
+</html>

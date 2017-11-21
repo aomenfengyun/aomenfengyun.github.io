@@ -1,0 +1,85 @@
+[
+  {
+    "id": 0,
+    "moneyType": 1,
+    "LBN": "com.kaixin.1",
+    "DTS": "com.dts.1",
+    "wIOSId": "wr_baccarat_1",
+    "gIOSId": "gbg.baccarat.1",
+    "price": 1,
+    "gold": 1,
+    "name": "￥1",
+    "detail": ""
+  },
+  {
+    "id": 1,
+    "moneyType": 1,
+    "LBN": "com.kaixin.6",
+    "DTS": "com.dts.6",
+    "wIOSId": "wr_baccarat_6",
+    "gIOSId": "gbg.baccarat.6",
+    "price": 6,
+    "gold": 6,
+    "name": "￥6",
+    "detail": ""
+  },
+  {
+    "id": 2,
+    "moneyType": 1,
+    "LBN": "com.kaixin.30",
+    "DTS": "com.dts.30",
+    "wIOSId": "wr_baccarat_30",
+    "gIOSId": "gbg.baccarat.30",
+    "price": 30,
+    "gold": 30,
+    "name": "￥30",
+    "detail": ""
+  },
+  {
+    "id": 3,
+    "moneyType": 1,
+    "LBN": "com.kaixin.98",
+    "DTS": "com.dts.98",
+    "wIOSId": "wr_baccarat_98",
+    "gIOSId": "gbg.baccarat.98",
+    "price": 98,
+    "gold": 98,
+    "name": "￥98",
+    "detail": ""
+  },
+  {
+    "id": 4,
+    "moneyType": 1,
+    "LBN": "com.kaixin.198",
+    "DTS": "com.dts.198",
+    "wIOSId": "wr_baccarat_198",
+    "gIOSId": "gbg.baccarat.198",
+    "price": 198,
+    "gold": 198,
+    "name": "￥198",
+    "detail": ""
+  },
+  {
+    "id": 5,
+    "moneyType": 1,
+    "LBN": "com.kaixin.328",
+    "DTS": "com.dts.328",
+    "wIOSId": "wr_baccarat_328",
+    "gIOSId": "gbg.baccarat.328",
+    "price": 328,
+    "gold": 328,
+    "name": "￥328",
+    "detail": ""
+  },
+  {
+    "id": 100,
+    "moneyType": 1,
+    "LBN": "",
+    "DTS": "",
+    "wIOSId": "",
+    "price": "",
+    "gold": "",
+    "name": "",
+    "detail": ""
+  }
+]

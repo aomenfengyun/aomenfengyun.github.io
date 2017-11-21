@@ -1,0 +1,2779 @@
+//ActivityPack.proto start==================================
+
+
+//获取任务列表
+message GetTaskListReq {
+}
+
+message TaskDataProto {
+	required int32 taskId = 1;		//任务ID
+	required int32 progress = 2;    //当前进度
+	required int32 times = 3;	    //总进度
+	required bool  reward = 4;		//是否已经领取奖励
+}
+
+//获取任务列表
+message GetTaskListResp {
+	repeated TaskDataProto taskData = 1;
+}
+
+// 请求奖励
+message GetTaskRewardReq{
+	required int32 taskId = 1;		//任务ID
+}
+
+// 返回奖励
+message GetTaskRewardResp{
+	required int32 taskId = 1;		//任务ID
+	required int32 result = 2;		//结果：OK-领取成功，TaskNotFinish-未完成...
+	repeated ItemProto reward = 3;
+}
+
+// 获取抽奖信息
+message GetLotteryDataReq{
+}
+
+// 反馈抽奖信息
+message GetLotteryDataResp{
+	required int32 freeTimes = 1;	// 免费次数
+	repeated ItemProto reward = 2;	// 奖项
+    required int32 castDiamond = 3; // 无免费次数时，消耗房卡数
+}
+
+// 抽奖
+message DoLotteryReq{
+}
+
+// 抽奖返回
+message DoLotteryResq{
+	required int32 result = 1;	// 结果 OK-成功， LotteryNoDiamond-房卡不足
+	required int32 freeTimes = 2;	// 免费次数
+	required ItemProto reward = 3;	// 奖项
+}
+
+// 获取兑换信息
+message GetConvertDataReq{
+}
+
+// 兑换商品
+message ItemConvertProto{
+	required int32 id = 1;			// 兑换ID
+	required ItemProto cast = 2;	// 消耗物品
+	required ItemProto award = 3;	// 获得物品
+}
+
+// 反馈兑换信息
+message GetConvertDataResp{
+	required int32 lottery = 1;	// 兑换券数
+	repeated ItemConvertProto reward = 2;	// 兑换物品
+}
+
+// 兑换
+message DoConvertReq{
+	required int32 convertId = 1;	// 兑换ID
+}
+
+// 兑换返回
+message DoConvertResq{
+	required int32 result = 1;	// 结果 OK-成功，ConvertNoLottery-兑换券不足
+	required int32 lottery = 2;	// 兑换券数
+	required ItemProto reward = 3;	// 兑换的物品
+}
+//ActivityPack.proto end==================================
+
+
+
+//AuthPack.proto start==================================
+
+//登录请求
+//account - 登录帐号
+//password - 登录密码
+message GameAuthReq {
+	required string authToken = 1;
+	optional string serverId = 2;
+}
+
+//登录返回
+//result - 0:succ >0:fail
+message GameAuthResp {
+	required int32 result = 1;    //登录结果，1 成功，0失败
+}
+
+message FuncSwitchInfo {
+	required int32 moduleKey= 1;  //模块key
+	required bool open = 2;
+}
+
+//AuthPack.proto end==================================
+
+
+
+//BaccaratPack.proto start==================================
+
+//请求获取所有房间信息
+message BaccaratGetAllRoomDataReq {
+}
+
+//每局结果
+message BaccaratRoundResultPorto {
+    required bool farmerPair = 1;  //闲对
+    required bool bankerPair = 2;  //庄对
+    required int32 winType = 3;  //庄，闲，和
+    optional int32 farmerNum = 4; //闲家点数
+    optional int32 bankerNum = 5; //庄家点数
+}
+
+//一个房间信息
+message BaccaratOneRoomProto {
+    required string roomId = 1;  //房间id
+    required int32 baccaratRoomType = 2;  //百家乐房间类型    
+    required int32 upToBanker = 3;  //是否可以上庄
+    required int32 bankerMinMoney = 4; //上庄最小金额
+    required int32 bankerFarmerBetMin = 5; //庄，闲区单人最小下注
+    required int32 otherBetMin = 6; //和，庄对，闲对区单人最小下注
+	required int32 allBankerFarmerBetMax = 7; //庄，闲区所有玩家下注之和最大值
+	required int32 allDeuceBetMax = 8; //和区所有玩家下注之和最大值
+	required int32 allFarmerPairBetMax = 9; //闲对区所有玩家下注之和最大值
+	required int32 allBankerPairBetMax = 10; //庄对区所有玩家下注之和最大值
+    required int32 playerNum = 11;  //房间玩家数量
+    repeated BaccaratRoundResultPorto roundResults = 12; //回合结果记录
+    optional int32 seatMinMoney = 13; //入座最小金币
+    optional int32 gamePhase = 14; //牌局状态
+	optional int32 leftSendCardTime = 15; //开始下注时间
+    repeated int32 bankerCards = 16; //庄家牌
+    repeated int32 farmerCards = 17; //闲家牌
+}
+
+//获取所有房间信息响应
+message BaccaratGetAllRoomDataResp {
+    repeated BaccaratOneRoomProto allRoomData = 1;
+}
+
+message BaccaratGetAllMultiRoomDataReq {
+    required bool checkOldRoom = 1; //是否检测旧房间
+}
+
+message BaccaratOneMultiRoomBetProto {
+    required string roomId = 1;
+    repeated BaccaratChipInfo chipInfo = 2;    
+}
+
+//获取所有多玩厅房间信息响应
+message BaccaratGetAllMultiRoomDataResp {
+    repeated BaccaratOneRoomProto allRoomData = 1;
+    repeated BaccaratOneMultiRoomBetProto betInfo = 2;
+}
+
+//座位信息
+message BaccaratSeatProto {
+    required string playerId = 1; //玩家id
+    required int32 seatIdx = 2;
+}
+
+//房间信息
+message BaccaratRoomProto {
+    required int32 state = 1; //游戏状态
+    required int32 leftSendCardTime = 2; //剩余发牌时间
+    required int32 leftCardNum = 3; //剩余牌数
+    repeated int32 bankerCards = 4; //庄家牌
+    repeated int32 farmerCards = 5; //闲家牌
+    optional int32 winType = 6; //牌局结果，庄，闲，和
+    optional bool bankerPair = 7; //庄对
+    optional bool farmerPair = 8; //闲对
+    required string bankerId = 9; //庄家id
+    required float bankerScore = 10; //庄家成绩
+    required int32 bankerRounds = 11; //连庄次数
+    repeated string waitBankers = 12; //排庄玩家id
+    repeated BaccaratPlayerProto players = 13; //玩家
+    repeated BaccaratSeatProto showSeats = 14; //座位上玩家id
+    repeated int32 sendCardSteps = 15; //竞咪厅发牌阶段列表
+    optional int32 sendCardLeftTime = 16; //发牌 
+    optional string bankerBetMax = 17; //庄家下注最多的玩家id
+    optional string farmerBetMax = 18; //闲家下注最多的玩家id
+    repeated int32 lookCardDir = 19; //咪牌方向
+    repeated int32 lookStep = 20; //咪牌进度
+    repeated float lookRadian = 21; //咪牌角度
+    optional string roomName = 22; //VIP厅，房间名字
+    optional string pwd = 23; //VIP厅，房间密码
+    optional int32 resetTimes = 24; //VIP厅，重置次数
+    optional int32 resetTimesMax = 25; //VIP厅，最大重置次数 
+    optional BaccaratOneRoomProto vipRoomData = 26; //VIP厅信息(废弃)
+    optional bool isConfirmBet = 27; //是否确认了下注
+    optional int32 playerSeatIdx = 28; //玩家本人的座位index
+    optional bool step2Send2 = 29; //竞咪厅第二阶段庄闲同时发牌
+    optional bool isFlyCard = 30; //是否飞牌
+    optional BaccaratOneRoomProto oneRoomData = 31;
+    optional int32 leftGameResultTime = 32; //剩余结算时间
+    optional int32 allSendCardTime = 33; //总的发牌时间
+}
+
+message BaccaratChipInfo {
+    required int32 area = 1; //区域
+    required int32 money = 2; //下注金额
+    optional int32 index = 3; //编号
+}
+
+message BaccaratPlayerProto {
+    required PlayerBriefProto playerInfo = 1;
+    required int32 seatIdx = 2; //座位index    
+    required float carryOnGold = 3;
+    repeated int32 areaBetAmount = 4; //每个区域下注金额    
+    repeated BaccaratChipInfo chipInfo = 5; //下注信息
+    optional bool isConfirmBet = 6; //是否确认下注
+}
+
+//发牌
+message BaccaratSyncSendCard {
+    required int32 state = 1;
+    repeated int32 bankerCard = 2; //庄家牌
+    repeated int32 farmerCard = 3; //闲家牌
+    optional string roomId = 4; //房间id
+}
+
+//发牌，竞咪厅
+message BaccaratSyncSendCardJM {
+    required int32 state = 1;  
+    required int32 leftTime = 2; //剩余时间
+    repeated int32 bankerCard = 3; //庄家牌
+    repeated int32 farmerCard = 4; //闲家牌
+    optional string bankerBetMax = 5; //庄家下注最多的玩家id
+    optional string farmerBetMax = 6; //闲家下注最多的玩家id
+    repeated int32 sendCardSteps = 7; //阶段列表
+    optional bool step2Send2 = 8; //第二阶段庄闲同时发牌
+}
+
+//咪牌，竞咪厅(客户端操作)
+message BaccaratLookCardJM {
+    required int32 sendCardStep = 1; //竞咪厅发牌阶段
+    required int32 cardIndex = 2; //牌index 
+    required int32 step = 3; //咪牌进度
+    optional float radian = 4; //角度
+}
+
+//咪牌，竞咪厅
+message BaccaratSyncLookCardJM {
+    required int32 cardIndex = 1; //牌index
+    required int32 step = 2; //咪牌进度
+    required int32 lookCardDir = 3; //咪牌方向
+    optional string playerId = 4;
+    optional float radian = 5; //角度
+}
+
+//咪牌阶段结束，竞咪厅
+message BaccaratSyncLookCardEndJM {
+    required int32 sendCardStep = 1; //竞咪厅发牌阶段     
+}
+
+//咪牌方向，竞咪厅(玩家操作)
+message BaccaratChangeDirJM {
+    required int32 sendCardStep = 1; //竞咪厅发牌阶段
+    required int32 cardIndex = 2; 
+    required int32 dir = 3; //方向
+}
+
+//咪牌方向，竞咪厅
+message BaccaratSyncChangeDirJM {
+    required int32 cardIndex = 1; 
+    required int32 dir = 2; //方向
+}
+
+//咪牌声音，竞咪厅(玩家操作)
+message BaccaratLookSoundJM {
+    required int32 sendCardStep = 1; //竞咪厅发牌阶段
+    required string sound = 2; //声音
+}
+
+//咪牌声音，竞咪厅
+message BaccaratSyncLookSoundJM {
+    required string sound = 1; //声音
+}
+
+
+//飞牌，竞咪厅(玩家操作)
+message BaccaratFlyCardJM {
+}
+
+//飞牌，竞咪厅
+message BaccaratSyncFlyCardJM {
+    required string playerId = 1;
+}
+
+//开牌，竞咪厅
+message BaccaratOpenCardJM {
+    required int32 sendCardStep = 1; //竞咪厅发牌阶段
+}
+
+//洗牌
+message BaccaratSyncShuffleCards {
+    required int32 cardValue = 1;  //展示牌
+    required int32 cardNum = 2;  //删除牌数
+    optional int32 allNum = 3; //未洗之前的总牌数
+}
+
+//洗牌开始
+message BaccaratSyncShuffleStart {
+    optional string playerId = 1;  //洗牌玩家id
+    optional string playerName = 2;  //洗牌玩家名字
+    optional int32 leftTime = 3; //剩余时间
+}
+
+//洗牌结束(玩家操作)
+message BaccaratShuffleEnd {
+    required int32 par = 1; //参数
+}
+
+//洗牌结束
+message BaccaratSyncShuffleEnd {
+    required int32 par = 1; //参数
+    required int32 cardValue = 2;  //展示牌
+    required int32 cardNum = 3;  //删除牌数
+    optional int32 allNum = 4; //未洗之前的总牌数
+}
+
+//下注(客户端操作)
+message BaccaratBet {
+    repeated BaccaratChipInfo chipInfo = 1; //下注信息  
+}
+
+//下注
+message BaccaratSyncOnBet {
+    required string playerId = 1; //下注玩家id
+    repeated BaccaratChipInfo chipInfo = 2; //下注信息
+    optional string bankerBetMax = 3; //庄家下注最多的玩家id
+    optional string farmerBetMax = 4; //闲家下注最多的玩家id
+}
+
+//撤销下注(客户端操作)
+message BaccaratRemoveBet {    
+}
+
+//撤销下注
+message BaccaratSyncOnRemoveBet {
+    required string playerId = 1; //撤销下注玩家id
+    required float carryOnGold = 2;
+    optional string bankerBetMax = 3; //庄家下注最多的玩家id
+    optional string farmerBetMax = 4; //闲家下注最多的玩家id
+}
+
+//百家乐，下注确认(玩家操作)
+message BaccaratConfirmBet {
+}
+
+//百家乐，下注确认
+message BaccaratSyncConfirmBet {
+    required bool shouldFlyCard = 1; //应该点击飞牌
+}
+
+//百家乐，有人确认下注
+message BaccaratSyncOtherConfirmBet {
+    required string playerId = 1;
+}
+
+//进入userPut状态
+message BaccaratSyncUserPut {
+    required int32 state = 1; //游戏状态
+    required int32 leftSendCardTime = 2; //剩余发牌时间
+    required int32 leftCardNum = 3; //剩余牌数
+    optional string roomId = 4; //房间id
+}
+
+message BaccaratPlayerMoneyProto {
+    required string playerId = 1; //玩家id
+    required float carryOnGold = 2; //玩家剩余随身携带余钱金额
+    required float gold = 3; //玩家剩余钱金额
+    optional float modifiedGold = 4; //变化的钱
+}
+
+//每局结算
+message BaccaratSyncGameResult {
+    required int32 state = 1; //游戏状态
+    required bool bankerPair = 2; //庄对
+    required bool farmerPair = 3; //闲对
+    required int32 winType = 4;  //庄，闲，和
+    required float bankerMoney = 5; //庄家钱
+    required float bankerScore = 6; //庄家成绩
+    required int32 bankerRounds = 7; //连庄次数
+    repeated BaccaratPlayerMoneyProto playerMoney = 8; //有金钱变动的玩家剩余钱金额 
+    optional string roomId = 9; //房间id
+    optional int32 leftGameResultTime = 10; //剩余结算时间
+}
+
+//座位(客户端操作)
+message BaccaratSeat {
+    required int32 seatIdx = 1; //座位index
+}
+
+//座位
+message BaccaratSyncOnSeat {
+    required string playerId = 1; //下注玩家id
+    required int32 seatIdx = 2; //座位index 
+    required int32 clearSeatIdx = 3; //此座位清空
+}
+
+//自动上座(客户端操作)
+message BaccaratAutoSeat {
+}
+
+//玩家申请上庄
+message BaccaratApplyBanker {
+    required bool isUp = 1; //true：申请上庄，false：申请下庄
+}
+
+//等待上庄列表变化
+message BaccaratSyncBankerListChange {
+    repeated string waitPlayerIdList = 1; 
+}
+
+//上下庄反馈
+message BaccaratSyncBakerNotice {
+    required int32 notice = 1; //1，玩家将于本剧结束下庄
+}
+
+//庄家变化
+message BaccaratSyncOnBanker {
+    optional string newBankerId = 1; //新庄家id
+    optional float bankerMoney = 2; //庄家钱
+    optional float bankerScore = 3; //庄家成绩
+    optional int32 bankerRounds = 4; //连庄次数
+}
+
+//聊天(客户端操作)
+message BaccaratChat {
+    required string playerId = 1; //玩家id
+    required int32 type = 2; //类型
+    required string content = 3; //内容
+}
+
+//聊天
+message BaccaratSyncOnChat {
+    required string playerId = 1; //玩家id
+    required int32 type = 2; //类型
+    required string content = 3; //内容
+}
+
+//百家乐，玩家一局记录
+message BaccaratRoundRecord {
+    required string playerId = 1;   
+    required bool isBanker = 2;
+    required float moneyBefore = 3;
+    required float moneyAfter = 4;
+    required float moneyDelta = 5;
+    required int32 moneyBanker = 6;
+    required int32 moneyFarmer = 7;
+    required int32 moneyDeuce = 8;
+    required int32 moneyBankerPair = 9;
+    required int32 moneyFarmerPair = 10;
+    required int32 winType = 11;
+    required bool bankerPair = 12;
+    required bool farmerPair = 13;
+    required int64 date = 14;
+    required int32 bankerNum = 15;
+    required int32 farmerNum = 16;
+}
+
+//百家乐，获取每局记录
+message BaccaratGetRoundRecordReq {
+}
+
+//百家乐，获取每局记录
+message BaccaratGetRoundRecordResp {
+    repeated BaccaratRoundRecord records = 1;
+}
+
+//百家乐，获取没结算的老房间
+message BaccaratGetOldRoomReq {
+}
+
+//百家乐，获取没结算的老房间
+message BaccaratGetOldRoomResp {
+    optional string roomId = 1; //老房间id
+}
+
+//百家乐，房间关闭通知
+message BaccaratSyncRoomEnd {
+}
+
+//百家乐，解散房间
+message BaccaratDismissRoomReq {
+	required string roomId = 1;
+}
+
+//百家乐，解散房间
+message BaccaratDismissRoomResp {
+	required string roomId = 1;
+}
+
+message BaccaratPresentRankProto {
+    required string playerId = 1;
+    required string playerName = 2;
+    optional string playerIcon = 3;
+    optional float gold = 4;
+}
+
+//百家乐，获取赠送排行榜信息
+message BaccaratGetPresentRankReq {    
+    required int32 num = 1; //前多少名，-1所有
+}
+
+//百家乐，获取赠送排行榜信息
+message BaccaratGetPresentRankResp {
+    repeated BaccaratPresentRankProto dayRankInfo = 1; //日排行榜信息
+    optional int32 myDayRank = 2; //我的日排名
+    optional float myDayGold = 3; //我日赠送的金额
+    repeated BaccaratPresentRankProto monthRankInfo = 4; //月排行榜信息
+    optional int32 myMonthRank = 5; //我的月排名
+    optional float myMonthGold = 6; //我月赠送的金额
+}
+
+//百家乐，每日签到
+message BaccaratDailySignReq {
+    required int32 index = 1;
+    required string packageId = 2;
+    required string os = 3;
+    required string gameVersion = 4;
+}
+
+//百家乐，转盘
+message BaccaratTurnTableReq {
+    required int32 gold = 1;
+    required string packageId = 2;
+    required string os = 3;
+    required string gameVersion = 4;
+    optional bool force = 5;
+}
+
+//百家乐，多玩厅下注(玩家操作)
+message BaccaratMRBetReq {    
+    optional string roomId = 1;
+    optional string serverId = 2;
+    optional PlayerBriefProto playerInfo = 3;
+    optional JoinRoomOptionProto jrOption = 4;
+    optional BaccaratBet betProto = 5; //下注信息
+}
+
+//百家乐，多玩厅下注
+message BaccaratMRBetResp {
+    required int32 result = 1;    
+    optional string playerId = 2;
+    optional string roomId = 3;    
+    optional BaccaratSyncOnBet betProto = 4;
+}
+
+//百家乐，多玩厅撤销下注(玩家操作)
+message BaccaratMRRemoveBetReq {    
+    optional string roomId = 1;
+    optional string serverId = 2; 
+}
+
+//百家乐，多玩厅撤销下注
+message BaccaratMRRemoveBetResp {
+    required int32 result = 1;    
+    optional string playerId = 2;
+    optional string roomId = 3;
+}
+
+//百家乐，退出多玩厅
+message BaccaratMMRQuitRoomReq {
+}
+
+//百家乐，多玩厅心跳
+message BaccaratMMRHeartbeatReq {
+    required string playerId = 1;
+}
+
+//百家乐，购买头像
+message BaccaratBuyIconReq {
+    required string icon = 1;
+}
+
+//百家乐，购买头像
+message BaccaratBuyIconResp {
+    required string icon = 1;
+}
+
+
+
+
+
+
+//BaccaratPack.proto end==================================
+
+
+
+//BaccaratSVIPPack.proto start==================================
+//百家乐，申请SVIP
+message BaccaratSVIPApplyReq {
+    optional string playerId = 1;
+    optional string account = 2;
+    optional string cardName = 3;
+    optional string nickName = 4;
+    optional string cardNumber = 5;
+    optional string phoneNumber = 6;
+}
+
+//百家乐，申请SVIP
+message BaccaratSVIPApplyResp {
+}
+
+//百家乐，查询SVIP
+message BaccaratSVIPQueryReq {
+}
+
+//百家乐，赠送
+message BaccaratPresentReq {
+    required string playerIdTo = 1;
+    required int32 amount = 2;
+}
+
+
+
+
+
+
+
+
+
+//BaccaratSVIPPack.proto end==================================
+
+
+
+//BankPack.proto start==================================
+
+message takeGoldReq {
+    required int32 addCarryOnGold = 1; //增加的随身携带金币
+}
+
+message takeGoldResp {    
+    required ItemProto itemProto = 1;
+}
+
+message saveGoldReq {
+    required int32 subCarryOnGold = 1; //减少的随身携带金币
+}
+
+message saveGoldResp {
+    required ItemProto itemProto = 1;
+}
+
+//绑定银行卡
+message BindCardNumberReq {
+    required string cardNum = 1;
+    required string cardName = 2; //卡名
+    required string bankName = 3; //银行姓名
+}
+
+message BindCardNumberResp {
+}
+
+//解绑银行卡
+message UnbindCardNumberReq {
+    required string account = 1;
+    required string hashPassword = 2;
+    required string platformId = 3;
+}
+
+message UnbindCardNumberResp {  
+}
+
+//提现
+message GetCashReq {
+    required float cash = 1; //金额
+    required string platformId = 2; //平台id
+    required string phoneNumber = 3; //电话号码
+}
+
+//提现
+message GetCashResp {
+    repeated ItemProto itemProto = 1;
+}
+
+message BankInfoProto {
+    required int32 type = 1;  //1:充值，2:提现
+    required int64 date = 2;
+    required float cash = 3;
+    optional string otherInfo = 4;
+}
+
+//查询
+message QueryBankReq {
+    required string token = 1;
+    required string playerId = 2;
+}
+
+message QueryBankResp {
+    required int32 result = 1;
+    repeated BankInfoProto bankInfo = 2;
+}
+
+//删除绑定银行卡信息
+message BaccaratRemoveBankCardReq {
+    required string accountNo = 1;
+}
+
+
+
+
+
+
+
+
+
+
+//BankPack.proto end==================================
+
+
+
+//BaseMaJiang.proto start==================================
+
+//碰牌set
+message PengSetProto {
+    repeated int32 paiSet = 1;
+    required string fromPlayer = 2;
+    optional int32 realSeat = 3;
+}
+
+//杠牌set
+message GangSetProto {
+    repeated int32 paiSet = 1;
+    optional string fromPlayer = 2;
+    required int32 gangType = 3;
+    optional int32 realSeat = 4;
+}
+
+//手牌
+message InHandSetProto {
+    repeated int32 cardList = 1;    //麻将牌列表
+    repeated int32 lackList = 2;    //被选为缺的牌列表，显示在尾部
+}
+
+//面板结构
+message BoardProto {
+    repeated PengSetProto pengs = 1;    //碰牌列表
+    repeated GangSetProto gangs = 2;    //杠牌列表
+    repeated ChiSetProto chis = 3;      //吃牌列表
+    repeated int32 huaList = 4;         //花牌列表
+}
+
+//牌型(对、豹子、顺子)
+message ModelProto {
+    repeated int32 cards = 1;   //组成牌型的牌
+    required int32 model = 2;   //牌型
+}
+
+//牌型组
+message ModelGroupProto {
+    optional int32 groupId = 1;     //用于输入选择的id
+    repeated ModelProto models = 2;
+}
+
+//和牌列表中的一张牌
+message HuProto {
+    required int32 cardId = 1;      
+    required bool solide = 2;   //true 实牌， false 虚牌
+    optional int32 huMoment = 3;        
+    repeated int32 huResults = 4;
+    optional int32 point = 5;   //胡的倍数
+    optional int32 plus = 6;    //加多少跟
+    optional int32 hainanMoment = 7;    //海南麻将的胡牌状态,(包牌，包四口，花上添花，等)
+}
+
+//(一堆)河牌，某个玩家前面的一堆河牌
+message HepaiPileProto {
+    repeated int32 paiSet = 1;      //河牌列表
+    required string fromPlayer = 2; 
+}
+
+// (一堆)山牌
+message SanpaiPileProto {
+    required int32 tailCount = 1;  //尾牌数量
+    required int32 cardCount = 2;  //山牌数量
+    required int32 seat = 3;        //山牌所在的座位
+    optional int32 initCount = 4;   //洗牌后，初始牌的数量
+    optional int32 initTailCount = 5;   //初始的尾牌数量
+}
+
+
+message GangRecordProto {
+    required int32 recordType = 1;      //刮风，下雨
+    repeated int32 relSeat = 2;    //相对座位，上家、下家、对家
+    required int32 point = 3;       //倍数
+    optional int32 roomCoin = 4;    //房间币 获得
+
+    optional bool genpai = 5;       //海南麻将，首张被杠
+}
+
+message HuRecordProto {
+    optional int32 huMoment = 1;    //天胡、地和、自摸、点炮、杠上开花
+    repeated int32 huType = 2;      //胡的牌型，会有多个
+    required int32 recordType = 3;  //自摸、点炮、被自摸、被点炮
+    required int32 point = 4;   //倍数
+    required int32 plus = 5;    //加根, （上海 花）
+    repeated int32 relSeat = 6; //相对座位，上家、下家、对家
+    optional int32 roomCoin = 7;    //房间币获得
+    optional int32 score = 8;   //番数 (上海 番)
+    optional int32 luzBitch = 9;    //泸州麻将 闺数
+    optional bool luzCallTing = 10;    //泸州麻将报叫
+    optional bool tianhua = 11;     //海南花上添花
+    optional bool baopai = 12;      //海南麻将，包牌
+    optional bool huangfan = 13;    //上海荒番
+}
+
+message HuDetailProto {
+    optional int32 huMoment = 1;    //天胡、地和、自摸、点炮、杠上开花
+    repeated int32 huType = 2;      //胡的牌型，会有多个
+    required int32 point = 3;   //倍数
+    required int32 plus = 4;    //加根
+    repeated int32 inHandList = 5;  //手牌
+    required int32 huCard = 6;      //配牌
+    optional BoardProto board = 7;  //和牌时候的面板牌快照
+}
+
+//吃牌的面板牌结构
+message ChiSetProto {
+    repeated int32 paiSet = 1;
+    optional string fromPlayer = 2;
+    optional int32 realSeat = 3;
+    optional int32 chiCard = 4;     //被吃的牌的id
+}
+//BaseMaJiang.proto end==================================
+
+
+
+//Common.proto start==================================
+
+//框架底层消息，由服务器框架调用，不出现在任何实际网络消息中
+message ErrorMessage {
+	required int32 errorCode = 1;	//服务器框架，接口返回Wrap消息的错误码用
+	optional bytes relayData = 2;	//转发数据
+}
+
+//Common.proto end==================================
+
+
+
+//GameMatch.proto start==================================
+//玩家比赛信息
+message PlayerMatchProto {
+    optional string playerId = 1;
+    optional string nickName = 2;
+    optional int32 Diamond = 3;
+    optional int32 roomCoin = 4;
+    optional int32 dlcjRing = 5; //打立出局第几轮
+    optional int32 djjfRing = 6; //定局积分第几轮
+    optional int32 matchPoint = 7; //比赛积分
+}
+
+//比赛结果
+message MatchRingResult {
+    optional int32 result = 1;//结果-流局...
+    optional int32 winPlayerIndex = 2;//赢家索引
+    optional int32 huPoint = 3;//胡型倍率
+}
+
+//单个房间的所有比赛玩家信息
+message PlayerMatchInRoomProto {
+   optional string roomId = 1; 
+   optional string matchId = 2;
+   optional int32 dlcjRing = 3; //打立出局第几轮
+   optional int32 djjfRing = 4; //定局积分第几轮
+   repeated PlayerMatchProto playerMatchProto = 5;
+   optional MatchRingResult matchRingResult = 6;//比赛结果，由游戏服务器向比赛服务器发送，需要根据结果进行匹配。比赛服务器向游戏服务器毋须发送
+}
+
+//报名比赛请求
+message SignUpMatchReq {
+    optional string serverId = 1;   //gameserver
+    optional string matchId = 2; 
+    optional string playerId = 3; //playerid
+}
+
+//报名比赛响应
+message SignUpMatchResp {
+    required int32 result = 1;
+    optional string matchId = 2;
+    optional string serverId = 3;
+}
+
+//加入比赛请求
+message JoinMatchReq {
+    optional string serverId = 1;   //gameserver
+    optional string matchId = 2; 
+    optional string playerId = 3; //playerid
+}
+
+//加入比赛响应
+message JoinMatchResp {
+    required int32 result = 1;
+    optional string matchId = 2;
+    optional string serverId = 3;
+}
+
+//退出比赛请求
+message QuitMatchReq {
+    optional string serverId = 1;   //gameserver
+    optional string matchId = 2; 
+    optional string playerId = 3; //playerid
+}
+
+//退出比赛响应
+message QuitMatchResp {
+    required int32 result = 1;
+    optional string matchId = 2;
+    optional string serverId = 3;
+}
+
+
+
+//获取比赛列表
+message GetMatchListReq {
+    optional int32 matchType = 1;//比赛类型
+    optional int32 matchStatus = 2;//比赛状态
+}
+
+//比赛基本信息
+message MatchInfoProto {
+    optional string matchId = 1;//比赛ID
+    optional string matchStartTime = 2;//比赛开始时间
+    optional int32 gameType = 3;//玩法
+    optional int32 maxPlayerNum = 4;//最大玩家数量
+    optional int32 currentPlayNum = 5;//当前玩家数量
+    optional int32 PayroomCard = 6;//比赛支付房卡
+    optional int32 PaymatchCoin = 7;//比赛支付比赛币
+    optional int32 RewardroomCard = 8;    //奖励房卡数量
+    optional int32 Rewarddiamond = 9;     //奖励钻石
+}
+
+//获取比赛列表响应
+message GetMatchListResp {
+    required int32 result =1;
+    repeated MatchInfoProto matchInfoProto = 2;
+}
+//GameMatch.proto end==================================
+
+
+
+//GamePack.proto start==================================
+
+//物品信息
+message ItemProto {
+    required int32 DType = 1; //类型
+    required int32 id = 2;  //id
+    required float count = 3;  //数量
+}
+
+//获取用户数据请求
+message GetUserAllDataReq {
+    optional string deviceId = 1; //设备号
+    optional string platformId = 2; //平台id
+    optional string packageId = 3; //包id
+    optional int32 service = 4;     //不填写或者0(携带所有), 1 麻将， 2 败家乐
+}
+
+//获取用户数据响应
+message GetUserAllDataResp {
+    required UserAllDataProto userAllData = 1;
+}
+
+//用户基本数据
+message UserDataProto {
+    optional string playerId = 1;       //玩家ID
+    optional string nickName = 2;       //玩家昵称
+    optional int32 sex = 3;             //玩家性别， 0 unkown, 1 male, 2 female
+    optional string playerIcon = 4;     //玩家头像
+    optional int32 gold = 5;            //金币、筹码
+    optional int32 diamond = 6;         //钻石
+    optional int32 level = 7;           //玩家等级
+    optional int32 levelExp = 8;        //等级经验
+    optional int32 vipLevel = 9;       //vip等级
+    optional int32 vipExp = 10;         //vip经验
+    optional string ipAddr = 11;        //本次登陆IP地址
+    optional string bindPhone = 12;     //已绑定的电话号码
+    optional string packageId = 13;     //packageId
+}
+
+message BaccaratVipRoomLimitProto {
+    required int32 type = 1;
+    required int32 bankerFarmerBetMin = 2;
+    required int32 allBankerFarmerBetMax = 3;
+}
+
+//百家乐客服信息
+message BaccaratGMInfoProto {
+    required string qq = 1;
+    required string nickName = 2;
+}
+
+//银行卡信息
+message BankCardInfoProto {    
+    required string accountNo = 1;
+    required string accountName = 2;
+    required string accountId = 3;
+    required string phoneNumber = 4;
+    required string contractId = 5;
+    required string applyId = 6;
+}
+
+//百家乐用户基本数据
+message BaccaratUserDataProto {
+    optional float gold = 1;
+    optional float carryOnGold = 2;
+    optional string cardNumber = 3;
+    optional string cardName = 4;
+    repeated BaccaratVipRoomLimitProto limit = 5; //vip房间，下注限制
+    optional int32 createVIPRoomCost = 6; //vip，开房间扣钱
+    optional string bankName = 7; //银行名字
+    repeated BaccaratGMInfoProto gmInfo = 8; //gm信息
+    optional bool openPresentRank = 9; //是否开放赠送排名
+    repeated int32 dailySignRecord = 10; //签到记录
+    optional bool turntableUsed = 11; //是否使用转盘
+    repeated string boughtIcon = 12; //购买的icon
+    repeated BankCardInfoProto bankCardInfo = 13; //银行卡信息
+}
+
+//麻将用户基本数据
+message MajiangUserDataProto {
+    optional int32 roomCard = 1;    //房卡数量
+    optional int32 diamond = 2;     //钻石
+
+    optional string bindPhone = 3;   //绑定电话号码
+    optional string bindAgent = 4;   //绑定代理的ID
+    optional int32 agentLevel = 5;   //代理等级， 0 普通用户, 1 (四川: 认证代理， 海南: 银牌代理)
+
+    optional int32 dailyBuyDiamond = 6;   //每日购买房卡数量
+    optional int32 dailyUseDiamond = 7;   //每日消耗房卡数量
+
+    optional int32 gold = 8;        //麻将金币
+}
+
+message PlayRecord {
+}
+
+message RechargeMaxProto {
+    required int32 category = 1; //充值类型
+    required int32 rechargeMax = 2; //充值上限
+}
+
+message RechargeInfoProto {
+    optional int32 rechargeType = 1;
+    repeated RechargeNoticeProto rechargeNotice = 2;
+    optional int32 rechargeMax = 3;
+    optional bool showBigRechargeTip = 4; //是否显示大额充值提示
+    optional string qq = 5; //大额充值qq
+    optional string qqNickName = 6; //大额充值qq昵称
+    optional int32 rechargeMaxQQ = 7; //充值限额QQ
+    repeated int32 rechargeCategory = 8; //充值类型
+    repeated RechargeMaxProto rechargeCategoryMax = 9; //充值类型上限
+}
+
+//用户所有数据
+message UserAllDataProto {
+    optional UserDataProto playerData = 1;    //玩家基本数据
+    optional PlayRecord playerRecord = 2;       //play记录
+    optional BaccaratUserDataProto baccaratData = 3; //百家乐数据
+    optional RechargeInfoProto rechargeInfo = 4; //充值通知信息
+    optional MajiangUserDataProto majiangData = 5;  //麻将数据
+    optional PlayerMJCount majiangCount = 6;          //麻将统计数据
+    optional HainanMJDataProto hainanMJData = 7; //海南麻将每日登录赠送钻石
+    optional bool hasRealID = 8;   //是否通过身份验证
+    optional string addictionControlInfo = 9;//防沉迷信息
+}
+
+//玩家基本信息
+message PlayerBriefProto {
+    optional string playerId = 1;
+    optional string nickName = 2;
+    optional int32 sex = 3;
+    optional int32 roomCoin = 4;  
+    optional int32 level = 5;
+    optional int32 vipLevel = 6;
+    optional string playerIcon = 7;
+    optional bool isRobot = 8;
+    optional PlayerMJCount mjCount = 9;   //个人的麻将游戏统计信息
+    optional string ipAddr = 10;            //本次登陆IP地址
+    optional string packageId = 11;
+    optional GPSProto gps = 12;             //gps信息
+}
+
+message BaccaratCROption {
+    optional string roomName = 1; //房间名字
+    optional int32 resetTimesMax = 2; //最大重置次数
+    optional int32 type = 3; //房间type    
+}
+
+message CreateRoomOptionProto {
+    optional MJCROption mjOption = 1;
+    optional BaccaratCROption baccaratOption = 2;  
+}
+
+message BaccaratJROption {
+    optional float gold = 1; //金币
+    optional float carryOnGold = 2; //随身携带金币
+    optional string pwd = 3;
+    optional bool needPwd = 4;
+}
+
+message JoinRoomOptionProto {
+    optional BaccaratJROption baccaratOption = 1; 
+}
+
+//开房间请求
+message CreateRoomReq {
+    optional string serverId = 1;   //gameserver
+    optional int32 roomType = 2;
+    optional int32 scoreLimit = 3;          //废弃
+    optional PlayerBriefProto playerInfo = 4;
+    optional CreateRoomOptionProto crOption = 5;
+    optional JoinRoomOptionProto jrOption = 6;
+    optional bool notJoin = 7;      //创建，但不加入房间
+    optional GPSProto gps = 8;      //用户的gps信息
+}
+
+//开房间响应
+message CreateRoomResp {
+    optional int32 roomType = 1;    //房间类型
+    optional string roomId = 2;     //房间号码
+    optional string serverId = 3;
+    optional string roomUUID = 4;   //房间全局唯一ID
+    optional bool creatorJoin = 5;  //创建者已加入房间
+}
+
+//进入房间请求
+message JoinRoomReq {
+    optional string serverId = 1;   //gameserver
+    optional string roomId = 2; 
+    optional int32 roomType = 3;
+    optional string pwd = 4;
+    optional PlayerBriefProto playerInfo = 5;
+    optional JoinRoomOptionProto jrOption = 6;   
+    optional GPSProto gps = 9;      //用户的gps信息
+}
+
+//进入房间响应
+message JoinRoomResp {
+    required int32 result = 1;
+    optional string roomId = 2;
+    optional int32 roomType = 3;
+    optional string serverId = 4;
+}
+
+//退出房间请求
+message QuitRoomReq {
+    required string playerId = 1;
+}
+
+//退出房间响应
+message QuitRoomResp {
+    required int32 result = 1;
+}
+
+//身份证验证请求
+message IdVerifyReq { 
+    required string idcardnum = 1; //身份证号码
+    optional string personname = 2; //人名-可选
+}
+
+//身份证验证响应
+message IdVerifyResp {
+    required int32 result = 1; //是否通过身份证验证
+}
+
+//被踢下线
+message NetBeKickedInform {
+	required int32 reason = 1; //原因，1：玩家顶掉，2：GM踢掉, 3: 服务器关闭
+}
+
+message PlayerRankProto {
+    required string playerId = 1;
+    required string playerName = 2;
+    optional string playerIcon = 3;
+    optional int32 gold = 4;
+}
+
+//排行榜
+message GetGoldRankReq {
+}
+
+message GetGoldRankResp {
+    repeated PlayerRankProto rankInfo = 1; //排行榜信息
+}
+
+//设置用户信息
+message SetPlayerInfoReq {
+    optional string nickName = 1;   //昵称，可选
+    optional int32 sex = 2;         //性别，可选
+    optional string icon = 3;       //头像，可选
+}
+
+message SetPlayerInfoResp {
+    required int32 result = 1;      //设置结果
+}
+
+//玩家信息改变通知
+message PlayerInfoChangedProto {
+    required string playerId = 1;
+    repeated ItemProto itemProto = 2;  
+}
+
+//查询玩家名字
+message QueryPlayerNameReq {
+    required string playerId = 1;
+}
+
+//查询玩家名字
+message QueryPlayerNameResp {
+    required string nickName = 1;
+}
+
+//玩家麻将信息统计
+message PlayerMJCount {
+    required int32 totalRing = 1;   //总局数
+    required int32 totalWin = 2;    //总赢数
+    required int32 maxWinStreak = 3;    //最大连胜
+    repeated MJTypeCount gameTypeCount = 4; //分类型统计
+}
+
+//海南麻将业务数据
+message HainanMJDataProto {
+    required int32 LoginDiamondNum = 1; //赠送的钻石数量
+}
+
+//获取海南麻将每日赠送请求
+message GetHNMJLDNReq { 
+     required int32 LoginDiamondNum = 1; //赠送的钻石数量
+}
+
+//获取海南麻将每日赠送响应
+message GetHNMJLDNResp {
+    required int32 result = 1; //是否成功
+}
+
+//麻将具体类型统计
+message MJTypeCount {
+    required int32 gameType = 1;
+    required int32 totalRing = 2;   //总局数
+    required int32 totalWin = 3;    //总赢数
+    optional int32 maxPoint = 4;    //最大倍数
+    repeated int32 bestHuModel = 5; //最大牌型
+}
+
+//充值
+message RechargeReq {
+	required int32 rechargeId = 1; //充值id
+	optional string platformId = 2; //平台id
+	optional string orderId = 3; //平台订单号
+	optional string cpOrderId = 4; //开发者订单号
+}
+
+//充值返回的信息 
+message RechargeResp {
+    repeated ItemProto itemProto = 1;
+}
+
+//服务器通知充值信息
+message RechargeNoticeProto {
+	optional int32 rechargeId = 1; //充值id
+    optional string platformId = 2; //平台id
+    optional string orderId = 3; //订单号
+    optional string cpOrderId = 4; //开发者订单号
+    optional float price = 5; //价格
+}
+
+//好友 begin
+//玩家显示 三要素： ID、昵称、头像
+message PlayerNameProto {
+    required string playerId = 1;
+    required string nickName = 2;
+    required string playerIcon = 3;
+}
+
+//好友信息
+message FriendProto {
+    required PlayerNameProto playerName = 1;
+    optional bool online = 2;
+}
+
+//好友请求消息，在线推送也使用这个消息
+message FriendEventProto {
+    required PlayerNameProto player = 1; //申请人
+    required string eventId = 2;    //消息ID
+    required int64 eventData = 3; //消息时间戳
+}
+
+//获取好友列表请求
+message GetFriendListReq {
+
+}
+
+//获取好友列表响应
+message GetFriendListResp {
+    repeated FriendProto friends = 1;               //好友列表
+    repeated FriendEventProto friendEvents = 2;     //好友申请列表
+}
+
+//搜索用户请求
+message SearchPlayerReq {
+    required string searchTxt = 1;  //昵称或者ID
+}
+
+//搜索好友响应
+message SearchPlayerResp {
+    repeated FriendProto searchResult = 1;
+}
+
+//添加好友请求
+message AddFriendReq {
+    required string playerId = 1;   //要添加的好友ID
+}
+
+//添加好友响应
+message AddFriendResp {
+    required int32 result = 1;
+}
+
+//确认好友申请
+message AckFriendEventReq {
+    required bool accept = 1;   //true接受，false拒绝
+    required string eventId = 2;    //申请的eventID
+}
+
+//确认好友申请的响应
+message AckFriendEventResp {
+    required int32 result = 1;
+    optional FriendProto newFriend = 2;     //确认通过，获得新的好友信息
+}
+
+//申请被对方确认的通知
+message AckFriendEventInform {
+    optional int32 result = 1;              //对方通过或者拒绝
+    optional PlayerNameProto playerName = 2;    //如果对方拒绝，会通过该字段告知时谁拒绝了你
+    optional FriendProto newFriend = 3;     //对方接受好友，获得新的好友信息
+}
+
+//邀请好友加入当前房间
+message InviteJoinRoomReq {
+    required string friendId = 1;   //好友的playerId
+    optional string roomId = 2;     //房间的id
+}
+
+//邀请发送响应
+message InviteJoinRoomResp {
+    required int32 result = 1;
+}
+
+//邀请加入房间的推送消息
+message InviteJoinRoomInform {
+    required PlayerNameProto host = 1;  //邀请人
+    required string roomId = 2;         //邀请加入的房间
+}
+
+//删除好友请求
+message DelFriendReq {
+    required string delPlayerId = 1;    //需要删除的好友ID
+}
+//删除好友响应
+message DelFriendResp {
+    required int32 result = 1;                //删除结果
+}
+
+//移除好友通知
+message DelFriendInform {
+    required string delPlayerId = 1;
+}
+
+//获取麻将统计数据请求
+message GetMajiangCountReq {
+
+}
+
+//获取麻将统计数据响应
+message GetMajiangCountResp {
+    optional PlayerMJCount majiangCount = 1;
+}
+
+//一条广播信息
+message BroadCastInfo {	
+	required int32 priority = 1; //时间戳
+	required int32 mode = 2; //mode
+	required int32 range = 3; //范围
+	required int32 loopDur = 4; //循环时间
+	required int32 loopCount = 5; //循环次数
+	required string title = 6; //标题
+	required string content = 7; //内容融
+	// optional string redEnvelopeId = 8; //红包id
+	// optional int32 broadcastType = 9;	//广播类型
+}
+
+//广播信息
+message BroadCastPost {
+	repeated BroadCastInfo infos = 1;
+}
+
+//单条公告
+message NoticeInfoProto {
+	required string title = 1;
+	required string headLine = 2;
+	required string date = 3;
+	required string text = 4;
+}
+
+message NoticePageProto {
+    required int32 noticeId = 1;
+    repeated NoticeInfoProto noticeList = 2;    //公告列表
+}
+//获取公告请求
+message GetNoticeReq {
+    optional string platformId = 1; //预留，暂时不填
+}
+
+//获取公告响应
+message GetNoticeResp {
+    required int32 result = 1;
+    repeated NoticePageProto noticePages = 2;    //公告列表
+}
+
+//提示信息
+message MsgTipProto {
+    optional string text = 1;   //  信息内容
+    optional string date = 2;   //  信息发布日期
+}
+
+//获取提示信息请求
+message GetMsgTipReq {
+
+}
+
+//获取提示信息响应
+message GetMsgTipResp {
+    required int32 result = 1;
+    optional MsgTipProto msg = 2;
+}
+
+//心跳请求
+message NetHeartbeatReq {
+
+}
+
+//心跳响应
+message NetHeartbeatResp {
+    optional int32 result = 1;  
+}
+
+//获取麻将房间创建价格表
+message GetMJRoomCreatePriceReq {
+}
+
+message MJRoomPriceProto {
+    required int32 gameType = 1;  //麻将类型
+    required int32 ring = 2;      //局数
+    required int32 price = 3;     //价格，钻石
+}
+message GetMJRoomCreatePriceResp {
+    repeated MJRoomPriceProto priceTable = 1;   //价格表
+}
+
+//获取麻将充值价格表
+message GetMJRechargeTableReq {
+}
+
+//单个充值项目
+message MJRechargeItemProto {
+    required int32 id = 1;      //充值项ID
+    optional float originPrice = 2; //打折时候的原价
+    optional float price = 3;       //当前实际价格
+    optional string iosId = 4;       //对应的iOS充值ID
+    optional int32 diamond = 5;     //购买的钻石数量
+    optional int32 bindDiamond = 6; //绑定代理后，给的钻石数量
+}
+
+message GetMJRechargeTableResp {
+    repeated MJRechargeItemProto rechargeItems = 1;
+    optional int32 rechargeType = 2;   //麻将计费类型
+}
+
+message MaJiangGetOldRoomReq {
+
+}
+
+message MaJiangGetOldRoomResp {
+    optional string roomId = 1;
+}
+
+//麻将绑定代理ID
+message MaJiangBindAgentReq {
+    required string bindAgentId = 1;
+}
+
+message MaJiangBindAgentResp {
+    required int32 result = 1;  //绑定结果
+    optional string bindAgent = 2;  //绑定到的AgentID
+}
+
+//麻将信息改变通知
+message MJDataChangeInform {
+    optional int32 dailyBuyDiamond = 1;   //每日购买房卡数量
+    optional int32 dailyUseDiamond = 2;   //每日消耗房卡数量
+}
+
+//GPS位置信息
+message GPSProto {
+    optional float latitude = 1;    //纬度
+    optional float longitude = 2;   //经度
+    optional float altitude = 3;    //海拔高度
+}
+//GamePack.proto end==================================
+
+
+
+//Header.proto start==================================
+message WrapPacket {
+	required int32 cmd = 1;       //command 消息号
+	required int32 requestId = 2;   //请求 id; 响应消息的请求id与请求消息的id相同
+	required int32 errorCode = 3;       //响应码，ErrorCode.OK为正确
+	required int32 packType = 4;   //服务器下发消息包分类， 1.请求 或 响应消息，2.服务器主动通知, 3.转发消息(聊天消息)
+	optional string roomServer = 5;		//同步消息，由客户端填写room所在服务器(加入房间请求中携带)，减轻服务器转发查询的压力
+	optional string authToken = 6;
+	optional bytes data = 7;
+}
+
+//Header.proto end==================================
+
+
+
+//MailPack.proto start==================================
+
+//获取邮件列表
+message GetMailListReq {
+}
+
+//邮件附件
+message MailAttachProto {
+	required int32 attachType = 1;   //使用DropType定义的值
+	required int32 itemId = 2;       //当attachType为装备(7)时，此字段代表物品ID
+	optional float itemCount = 3;    //物品的数量
+}
+
+
+message MailDataProto {
+	required string mailId = 1;		//邮件ID
+	required string from = 2;		//发件人名称
+	required string content = 3;	//邮件内容
+	required int64 time = 4;		//发件时间戳
+	required int32 readFlag = 5;	//已读标志 0 未读，1 已读
+	required int32 remainTime = 6;	//距离邮件过期还剩的时间，单位秒
+	repeated MailAttachProto attachment = 7;
+	optional string title = 8;
+}
+
+//获取邮件列表
+//mailData - 邮件内容
+message GetMailListResp {
+	repeated MailDataProto mailData = 1;
+}
+
+//打开邮件
+//id - 邮件ID
+message OpenMailReq {
+	required string mailId = 1;
+}
+
+//打开邮件返回
+//id - 邮件编号
+message OpenMailResp {
+	required string mailId = 1;
+}
+
+//删除邮件
+//id - 邮件ID
+message DelMailReq {
+	required string mailId = 1;
+}
+
+//删除邮件返回
+//id - 邮件编号
+message DelMailResp {
+	required string mailId = 1;
+}
+
+//获取邮件奖励
+//id - 邮件ID
+message GetMailAwardReq {
+	required string mailId = 1;
+}
+
+//获取邮件奖励返回
+//id - 邮件编号
+//attachment - 邮件奖励内容
+message GetMailAwardResp {
+	required string mailId = 1;
+	repeated ItemProto attachment = 2; //复用战斗掉落的数据结构来表示邮件领取的奖励内容
+}
+
+//获取所有邮件奖励
+message GetAllMailAwardReq {
+}
+
+//获取邮件奖励
+message GetAllMailAwardResp {
+	repeated string mailIds = 1; //删除的邮件id
+	repeated ItemProto attachment = 2; //复用战斗掉落的数据结构来表示邮件领取的奖励内容
+}
+//MailPack.proto end==================================
+
+
+
+//MaJiangOption.proto start==================================
+
+
+//麻将创建选项
+message MJCROption {
+    optional int32 maxRing = 1;     //最大圈数
+    optional int32 maxScore = 2;    //最大番数，0为不限
+    optional int32 gameType = 3;    //0血战到底， 1血流成河, 2 泸州麻将, 3 海南4人麻将, 4 海南3人麻将, 5 广东汕头4人 6 广东汕头3人
+    optional bool exchange = 4;     //是否换三张
+    optional int32 ghostCount = 5;  //泸州麻将，鬼数，可选：4，8，12
+    optional bool callTing = 6;     //泸州麻将，报叫
+    
+    optional HainanOption HainanOption = 7; //海南麻将选项
+    optional GuangdongSTOption GuangdongSTOption = 8; //广东汕头麻将选项
+    optional GuangdongSGOption GuangdongSGOption = 9; //广东韶关麻将选项
+
+    optional SHQiaomaOption shQiaoma = 10;      //上海敲麻选项
+    optional SHHongZOption shHongZ = 11;        // 上海红中
+    optional SHBaidaOption shBaida = 12;        // 上海百搭
+}
+
+//海南麻将创建选项
+message HainanOption {
+    optional bool zhuangxian = 1;   //海南庄闲
+    optional bool lianzhuang = 2;   //海南连庄
+    optional bool shangga = 3;      //上嘎
+    optional bool youfan = 4;       //有番
+    optional bool liujusuanfen = 5; //流局算分
+    optional bool huahu = 6;        //花胡
+    optional bool ziyoushangga = 7; //自由上嘎
+    optional bool fanggoujiao = 8;  //防勾脚
+    optional bool wufeng = 9;       //无风牌
+    optional bool bukechi = 10;     //不可吃
+}
+
+//广东汕头
+message GuangdongSTOption {
+    optional bool dianpao = 1;      //可点炮
+    optional bool magengdi = 2;     //马跟底分
+    optional bool haidifang = 3;    //海底翻倍
+    optional int32 manum = 4;       //买马数量：0，2，4，6
+    optional bool qianggangquanbao = 5; //抢杠全包
+}
+
+//广东韶关
+message GuangdongSGOption {
+    optional bool hasyijiuwang = 1; //是否有一九万牌
+    optional bool fanggui = 2;      //是否翻鬼
+    optional int32 manum = 3;       //买马数量：0，2，4，6
+    
+}
+
+//上海敲麻玩法
+message SHQiaomaOption {
+    optional int32 difen = 1;   //底分
+    optional int32 dihua = 2;   //底花
+    optional bool paixing = 3;  //牌型
+    optional bool yimo = 4;     //一摸两铳
+    optional bool liangmo = 5;  //两摸三铳
+    optional bool huangfan = 6; //荒番
+    optional bool kaibao = 7;   //开宝
+    optional bool fly = 8;      //飞苍蝇
+    optional bool chi = 9;      //吃牌
+}
+
+message SHHongZOption{
+    optional int32 difen = 1;   //底分
+    optional bool fly = 2;      //飞苍蝇
+    optional bool moma = 3;     //摸码
+}
+
+message SHBaidaOption{
+    optional int32 difen = 1;   //底分
+    optional int32 dihua = 2;   //底花
+    optional int32 fengding = 3;//封顶
+    optional bool zimo = 4;     //自摸胡
+    optional bool daichi = 5;   //带吃牌
+    optional bool huangfan = 6; //荒番
+    optional bool fly = 7;      //飞苍蝇
+}
+
+//MaJiangOption.proto end==================================
+
+
+
+//MaJiangPack.proto start==================================
+
+message MJPlayerProto {
+    optional PlayerBriefProto playerInfo = 1;
+    optional int32 seat = 2;
+    optional InHandSetProto inHand = 3;     //手牌
+    optional int32 lackChoice = 4;      //缺
+    optional BoardProto board = 5;      //面板
+    repeated HuProto hupaiList = 6;       //和牌列表(血流成河)
+    optional HepaiPileProto HepaiPile = 7;  //玩家出过的河牌
+    optional bool isMaster = 8;         //是否房主
+    optional bool ready = 9;            //准备状态
+    optional int32 roomCoin = 10;        //房间币
+    optional bool matchGhost = 11;   //泸州麻将贴鬼杠状态，true为显示鬼杠鬼碰
+    optional bool callTing = 12;     //泸州报叫状态,true 为已报叫  (以及上海敲麻)
+    optional int32 drawCard = 13;       //当前摸到的牌, -1为没有牌，0 为其他玩家摸的牌，但是不能告诉你
+    optional TingProto ting = 14;    //听牌状态
+    optional int32 ga = 15;         //海南麻将嘎，0为无嘎
+    optional int32 bankerStreak = 16;   //连庄次数
+}
+
+message MaJiangRoomProto {
+    repeated int32 gamePaiSet= 1;   //游戏需要的全部牌
+    required int32 ring = 2;        //当前第几轮
+    required int32 maxRing = 3;     //总共几轮
+    required int32 ringPhase = 4;   //当前局房间状态阶段
+    optional int32 gamePhase = 5;   //当前局game状态(洗牌，发牌，换牌，选缺，开局， 掉线重入的玩家根据当前阶段进行场景信息构建)
+    optional string bankerPlayerId = 6;     //庄家的playerId
+    repeated SanpaiPileProto sanpaiList = 7;    //4个座位前的山牌
+    repeated MJPlayerProto players = 8; //玩家
+    optional int32 gameType = 9;    //游戏类型，0血战到底 1血流成河
+    optional int32 maxScore = 10;   //封顶番数
+    optional bool needReady = 11;   //房间需要准备确认
+    optional int32 justDiscard = 12;    //最近出的牌
+    optional MJCROption createOption = 13;  //房间创建选项
+}
+
+//换牌提示
+message TipExchangeProto {
+    repeated int32 recommand = 1;   //  推荐三张换牌
+    required int32 tipCdMS = 2; //换牌时间倒数，毫秒
+}
+
+//选缺提示
+message TipLackChoiceProto {
+    optional int32 recommand = 1;   //选缺推荐花色
+    required int32 tipCdMS = 2; //换牌时间倒数，毫秒
+}
+
+//指示钟
+message ActionTurn {
+    required int32 seat = 1;
+    optional int32 cdMS = 2;
+    optional int32 actionType = 3;  //等待act的类型:0 换牌，1 选缺，2 出牌后等待(碰杠和)，3 摸牌后等待(出牌、杠、和)，4 碰后等待出牌
+}
+
+//发给玩家的，可以选择的 胡、杠、碰 的操作
+message TipAction {
+    optional TipHuProto tipHu = 1;
+    repeated TipGangProto tipGang = 2;
+    repeated TipPengProto tipPeng = 3;
+    optional TipDiscardProto tipDiscard = 4;
+    optional TipCallTingProto tipCallTing = 5;  //报叫
+    repeated TipChiProto tipChi = 6;    //吃(海南麻将)
+}
+
+//出牌提示
+message TipDiscardProto {
+    required int32 tipId = 1;
+    // repeated int32 selectDiscard = 2;   //限制可以选择打出的手牌
+    optional int32 discardType = 3;     //0 摸牌后出牌， 1 碰牌后出牌
+    optional DiscardToTingList tingSelect = 4;  //出牌后可以听牌的提示数据
+    optional bool callable = 5;         //可以报听 (上海敲麻)
+    repeated int32 forbidPai = 6;       //本次禁止出的 牌 (EnumPai)
+}
+
+//碰牌提示
+message TipPengProto {
+    required int32 tipId = 1;   //提示id，用户确认碰时，将对应id用作输入
+    required int32 matchCard = 2;   //配牌
+    repeated int32 handCard = 3;    //对应的手牌
+    optional string playerId = 4;   //提示碰的玩家(碰的玩家)
+    optional string fromPlayerId = 5;
+    optional int32 tipCdMS = 6;        //倒计时
+}
+
+//杠牌提示
+message TipGangProto {
+    required int32 tipId = 1;
+    optional int32 matchCard = 2;   //配牌
+    required int32 gangType = 3;    //杠牌类型
+    repeated int32 handCard = 4;    //对应的手牌，或者面板牌
+    optional string playerId = 5;   //提示杠的玩家(杠的玩家)
+    optional string fromPlayerId = 6;
+    optional int32 tipCdMS = 7;        //倒计时
+}
+
+//泸州麻将报叫
+message TipCallTingProto {
+    required int32 tipId = 1;
+}
+
+//提示结束，玩家操作结束，通知客户端清理提示UI
+message TipFinish {
+    // repeated int32 finishTip = 1;   //场景只有唯一提示时，不填写。
+}
+
+//听牌提示
+message TipTingProto {
+    required int32 tipId = 1;
+}
+
+//一个人的和牌提示
+message TipHuProto {
+    required int32 tipId = 1;
+    repeated ModelGroupProto modelGroupList = 2;    //和牌拆分
+    optional string playerId = 3;   //提示和的玩家
+    optional string fromPlayerId = 4;   //和的牌是哪个玩家出的
+    optional int32 cardFromOther = 5;    //别人出的牌(如果是因为别人出牌造成的和)
+    optional int32 tipCdMS = 6;        //倒计时
+    optional int32 huMoment = 7;        
+    repeated int32 huResults = 8;
+    optional int32 huPoint = 9;     //胡的倍数
+    optional int32 huPlus = 10;     //加多少根
+}
+
+//一个人发到的牌
+message DisPatchProto {
+    required string playerId = 1;
+    repeated int32 dispatchCard = 2;
+    repeated int32 sorted = 3;
+}
+
+//骰子结果
+message ActDice {
+    required int32 dice1 = 1;               //骰子1点数;
+    required int32 dice2 = 2;               //骰子2点数;
+    optional int32 phaseCdMS = 3;           //留给客户端渲染的时间，下一步为发牌
+}
+//发牌
+message ActDispatch {
+    repeated DisPatchProto dispatch = 1;
+    repeated SanpaiPileProto refreshSan = 2;   //山牌刷新
+    optional int32 leftCard = 3;                //剩余牌数量
+}
+
+//换牌
+message ActExchange {
+    repeated int32 removedCards = 1;
+    repeated int32 getCards = 2;
+    required string fromPlayer = 3;
+    required InHandSetProto inHand = 4;     //刷新手牌
+}
+
+//一个人的缺
+message LackProto {
+    required string playerId = 1;
+    required int32 lack = 2;
+}
+
+//选缺
+message ActLackChoice {
+    repeated LackProto lackChoice = 1;
+}
+
+//手牌、面板等 刷新，暂时只定义手牌(用于选缺后，手牌的排序改变)
+message ActRefreshCard {
+    required string playerId = 1;
+    optional InHandSetProto inHand = 2;
+}
+
+//出牌 (服务器下发)
+message ActDiscard {
+    required string playerId = 1;
+    required int32 cardId = 2;
+    optional HepaiPileProto refreshHe = 3; // 河牌刷新
+    optional InHandSetProto inHand = 4;     //玩家手牌变化
+}
+
+//碰 (服务器下发)
+message ActPeng {
+    required string playerId = 1;
+    required PengSetProto pengSet = 2;
+    optional InHandSetProto inHand = 3; //手牌刷新，只有玩家自己的消息中有
+    optional HepaiPileProto refreshHe = 4; // 河牌刷新
+    optional BoardProto refreshBoard = 5;      //面板
+}
+
+//杠 (服务器下发)
+message ActGang {
+    required string playerId = 1;
+    required GangSetProto gangSet = 2;
+    optional InHandSetProto inHand = 3; //手牌刷新，只有玩家自己的消息中有
+    optional HepaiPileProto refreshHe = 4; // 河牌刷新
+    optional BoardProto refreshBoard = 5;      //面板
+}
+
+//胡 (服务器下发)
+message ActHu {
+    required string playerId = 1;
+    required HuProto huCard = 2;
+    optional HepaiPileProto refreshHe = 3; // 河牌刷新
+    repeated HuProto refreshHu = 4;
+}
+
+//摸牌 (服务器下发)
+message ActDraw {
+    required string playerId = 1;
+    optional int32 drawCard = 2;        //只有摸的玩家收到真实的牌
+    optional SanpaiPileProto refreshSan = 3;   //山牌刷新,下发哪一堆
+    optional int32 leftCard = 4;        //剩余牌
+}
+
+//泸州麻将，报叫
+message ActCallTing {
+    required string playerId = 1;
+    repeated int32 selectDiscard = 2;   //可以选择打出的手牌，(打出后进入听状态),只有玩家本人可收到
+}
+
+//一炮多响
+message ActMultiPao {
+    required string playerId = 1;       //点炮的人
+}
+
+message PrimExchangeChoice {
+    repeated int32 cardChoice = 1;
+}
+
+message PrimLackChoice {
+    required int32 huaseChoice = 1;
+}
+
+//出牌 (客户端操作)
+message PrimDiscard {
+    required int32 cardId = 1;
+}
+
+//碰 (客户端操作)
+message PrimPeng {
+    required int32 tipId = 1;
+}
+
+//杠 (客户端操作)
+message PrimGang {
+    required int32 tipId = 1;
+}
+
+//胡 (客户端操作)
+message PrimHu {
+    required int32 tipId = 1;
+}
+
+//玩家自排序 
+message PrimSort {
+    optional InHandSetProto inHand = 1;
+}
+
+//是否显示贴鬼碰/杠
+message PrimIsMatchGhost {
+    required bool isMatch = 1;   //true 显示鬼碰杠， false 不显示鬼碰杠
+}
+
+//报叫输入
+message PrimCallTing {
+    required int32 tipId = 1;
+}
+
+//恢复自动排序 
+message PrimAutoSort {
+}
+
+//同步 一轮开始
+message SyncRingBegin {
+    required int32 ringNum = 1;
+    required int32 maxRing = 2;
+    required string bankerPlayerId = 3;     //本局庄家
+    repeated SanpaiPileProto sanpaiList = 4;    //4个座位前的山牌
+    optional int32 bankerStreak = 5;    //本局庄家连庄次数
+}
+
+//同步 一轮结束结束
+message SyncRingEnd {
+    optional int32 ring = 1;
+    repeated PlayerRecord playerRecords = 2;
+    optional bool allLostGame = 3;  //流局
+    optional MJRoomRecountProto roomRecount = 4;    //房间统计，最后一轮结算携带
+    optional FlyProto flyProto = 5;     //上海麻将，飞苍蝇
+}
+
+message MJRoomRecountProto {
+    optional string roomId = 1;
+    optional int64 dateTime = 2;    //时间戳
+    optional int32 ring = 3;    
+    optional int32 maxRing = 4;
+    repeated MJPlayerRecountProto playerRecount = 5;
+}
+
+message MJPlayerRecountProto {
+    optional string playerId = 1;
+    optional string nickName = 2;
+    optional string playerIcon = 3;
+
+    optional int32 zimo = 4;        //自摸
+    optional int32 jiepao = 5;      //接炮
+    optional int32 dianpao = 6;     //点炮
+    optional int32 angang = 7;      //暗杠
+    optional int32 minggang = 8;    //明杠
+    optional int32 bugang = 9;  //补杠
+    optional bool bigWinner = 10;   //大赢家
+    optional bool bigPao = 11;      //最佳炮手
+}
+
+message PlayerRecord {
+    required string playerId = 1;
+    repeated GangRecordProto gangRecords = 2;    //杠牌记录
+    repeated HuRecordProto huRecords = 3;   //和牌记录
+    repeated ShowRecordProto showRecords = 4;   //查花猪，查大叫记录
+    required int32 totalPoint = 5;          //总倍数，这一轮的输赢倍数
+    required int32 roomCoin = 6;            //当前房间币，房间内所有局数的总和
+    optional int32 ringRoomCoin = 7;        //本轮赢取的房间币
+    optional HuDetailProto bestHu = 8;
+    optional bool isBanker = 9;             //是否庄家
+    optional int32 bankerStreak = 10;        //连庄次数
+    optional int32 hainanGa = 11;           //海南麻将的嘎
+    optional bool dianpao = 12;             //(海南麻将) 该玩家点炮
+    optional MaCardProto maCard = 13;              //(广东汕头) 马牌信息
+}
+
+message PlayerHand {
+    required string playerId = 1;
+    required InHandSetProto inHand = 2;
+}
+
+//牌局结束，所有玩家亮牌，查花猪，查大叫
+message ActShowHand {
+    repeated PlayerHand playerHands = 1;
+}
+
+message ShowRecordProto {
+    required int32 recordType = 1;      //查花猪，查大叫，被查花猪，被查大叫
+    required int32 relSeat = 2;    //相对座位，上家、下家、对家
+    required int32 point = 3;       //倍数
+    optional int32 roomCoin = 4;    //房间币获得
+}
+
+// 马牌信息
+message MaCard {
+    required int32 card = 1;    // 牌值
+    required bool  isHit= 2;    // 是否中马
+}
+
+message MaCardProto{
+    repeated MaCard maCard = 1; // 马牌
+}
+
+//上海麻将，飞苍蝇
+message FlyProto {
+    required int32 card = 1;    //飞到的苍蝇牌
+    required int32 flyFlower = 2; //飞苍蝇的花倍数
+}
+
+//房主踢人
+message PrimKick {
+    required string playerId = 1;   //踢掉的玩家ID
+}
+
+//玩家准备输入
+message PrimReady {
+    required bool ready = 1;    
+}
+
+//玩家准备状态
+message PlayerReadyProto {
+    optional string playerId = 1;
+    optional int32 seat = 2;
+    required bool ready = 3;
+}
+
+//向所有人同步当前准备状态
+message SyncPlayerReady {
+    repeated PlayerReadyProto playerReadys = 1;
+}
+
+//玩家的房间币
+message PlayerCoinProto {
+    optional string playerId = 1;
+    optional int32 roomCoin = 2;
+}
+
+//同步刷新所有玩家的房间币
+message SyncRoomCoin {
+    repeated PlayerCoinProto playerCoins = 1;
+}
+
+//获取房间记录请求
+message GetMJRoomRecordReq {
+
+}
+
+//获取房间记录响应
+message GetMJRoomRecordResp {
+    repeated MJRoomRecordProto latelyRoom = 1;      //最近房间记录
+}
+
+//麻将房间记录
+message MJRoomRecordProto {
+    required string roomId = 1;         //房间号
+    optional MJRoomPlayerProto roomMaster = 2;  //房主
+    optional int32 gameType = 3;                  //房间类型
+    optional int32 maxScore = 4;                  //最大番数
+    optional int32 maxRing = 5;                   //房间设定轮数
+    optional int64 endTime = 6;                 //结束时间
+    repeated MJRingRecordProto roomRings = 7;       //所有轮的记录
+}
+
+//麻将一局的记录
+message MJRingRecordProto {
+    repeated MJPlayerRingProto ringPlayers = 1;     //4个玩家的分数记录
+}
+
+//一轮中单个玩家的记录
+message MJPlayerRingProto {
+    optional MJRoomPlayerProto playerName = 1;      //玩家的个人信息
+    optional int32 ringPoint = 2;                   //玩家的本轮输赢倍数
+    optional int32 roomCoin = 3;                    //玩家本轮输赢的房间点数
+}
+
+message MJRoomPlayerProto {
+    required string playerId = 1;
+    required string nickName = 2;
+    required string icon = 3;
+    required int32 seat = 4;
+}
+
+//发起解散房间投票
+message StartDismissVote {
+
+}
+
+message TipRoomDismissVote {
+    required string originPlayer = 1;   //投票发起人ID
+    optional int32 originSeat = 2;      //发起人座位
+    optional SyncPlayerDismissVote voteState = 3;   //当前投票状况
+    optional int32 waitMS = 4;          //投票剩余时间，毫秒
+}
+
+message PrimDismissVote {
+    required bool agree = 1;    //true 同意解散， false 反对解散
+}
+
+//玩家准备状态
+message PlayerDismissVoteProto {
+    optional string playerId = 1;
+    optional int32 seat = 2;
+    required int32 voteState = 3;   //0 同意， 1 反对， 2 未投票
+}
+
+//向所有人同步当前准备状态
+message SyncPlayerDismissVote {
+    repeated PlayerDismissVoteProto playerReadys = 1;
+    optional bool voteFinish = 2;  //投票是否结束,true 结束，false 没有
+}
+
+//可选的出牌列表
+message DiscardToTingList {
+    repeated DiscardToTingProto select = 1;
+}
+
+message DiscardToTingProto {
+    required int32 removeCard = 1;
+    required TingProto ting = 2;
+}
+
+//当前手牌所有的听牌列表
+message TingProto {
+    repeated TingCardProto huList = 1;
+}
+
+//一张听牌
+message TingCardProto {
+    required int32 tingCard = 1;    //听牌的类型(比如三万)中，随机的一张牌的id
+    required int32 score = 2;       //听牌的番数
+    required int32 point = 3;       //听牌的倍数/颗数
+    optional bool youfan = 4;       //海南麻将特有字段，有番
+}
+
+//向玩家同步，当前处于听牌状态
+message SyncTingList {
+    optional TingProto ting = 1; //如果为空，则说明听牌状态消失
+}
+
+/////////// 海南麻将特有消息 /////////
+message TipGaSelect {
+    required int32 tipCdMS = 1; //选嘎时间倒数，毫秒
+    optional int32 limit = 2;   //限制最小可选的嘎，小于limit的嘎不可选
+    optional int32 limitMax = 3;    //最大可选的嘎，如果为0，代表无限制(目前取值只有3，和0两种可能)
+}
+
+//摸牌 (服务器下发)
+message ActHainanDraw {
+    required string playerId = 1;
+    repeated int32 drawCard = 2;        //只有摸的玩家收到真实的牌
+    repeated SanpaiPileProto refreshSan = 3;   //山牌刷新,下发哪一堆
+    optional int32 leftCard = 4;        //剩余牌
+}
+
+//吃牌提示
+message TipChiProto {
+    required int32 tipId = 1;   //提示id，用户确认吃时，将对应id用作输入
+    required int32 matchCard = 2;   //要吃的牌
+    repeated int32 straight = 3;   //凑成的顺子
+    optional string fromPlayerId = 6;
+}
+
+//吃 (服务器下发)
+message ActChi {
+    required string playerId = 1;
+    required ChiSetProto chiSet = 2;
+    optional InHandSetProto inHand = 3; //手牌刷新，只有玩家自己的消息中有
+    optional HepaiPileProto refreshHe = 4; // 河牌刷新
+    optional BoardProto refreshBoard = 5;      //面板
+}
+
+//一个人的缺
+message GaProto {
+    required string playerId = 1;
+    required int32 ga = 2;
+}
+
+//选缺
+message ActGaSelect {
+    repeated GaProto gaSelect = 1;
+}
+
+//亮出花
+message ActShowHua {
+    required string playerId = 1;
+    repeated int32 huaList = 2;     //新亮出的花牌
+    optional InHandSetProto inHand = 3; //手牌刷新
+    optional BoardProto refreshBoard = 4;      //面板刷新
+    optional bool isDraw = 5;       //是否将摸到的牌亮出去，如果是摸到的牌，需要清理掉摸牌区的显示
+    optional bool huaHu = 6;        //达到花胡条件
+}
+
+//补花(到手牌)
+message ActBuHua {
+    required string playerId = 1;
+    repeated int32 buCards = 2;        //只有摸的玩家收到真实的牌
+    optional InHandSetProto inHand = 3; //手牌刷新
+    repeated SanpaiPileProto refreshSan = 4;   //山牌刷新
+    optional int32 leftCard = 5;        //剩余牌
+}
+
+//海南跟牌
+message ActGenpai {
+    required string beFollowPlayer = 1;     //被跟牌玩家
+    optional bool gang = 2;     //true，首张被杠； false， 跟牌
+}
+
+message PrimGa {
+    required int32 ga = 1;      //用户选择的嘎，0 为无嘎
+}
+
+//吃
+message PrimChi {
+    required int32 tipId = 1;
+}
+
+//同步海南麻将三道牌，四道牌同步消息
+message SyncHainanBaopai {
+    required string playerId = 1;   //被三道牌玩家ID
+    required int32 count = 2;       //3 三道牌， 4 四道牌
+}
+
+message ActFangGui {
+    required int32 showCard = 1;                // 翻出的牌
+    required int32 guiPai = 2;                  // 鬼牌（EnumPai枚举值）
+    repeated SanpaiPileProto refreshSan = 3;    // 山牌刷新
+    optional int32 leftCard = 4;                // 剩余牌
+}
+
+//MaJiangPack.proto end==================================
+
+
+
+//RebatePack.proto start==================================
+
+//一个下线用户信息
+message RebateChildInfo {
+    required string playerId = 1; //玩家id
+    required string parentId = 2; //上线id
+    required int32 level = 3; //第几层下线
+    optional string name = 4; //玩家名字
+}
+
+//返利，查询上下线
+message RebateQueryRSReq {
+    required int32 level = 1; //查询几层下线
+}
+
+message RebateQueryRSResp {
+    required string playerId = 1; //玩家id
+    required int32 rsLevel = 2; //向多少层下线收钱
+    optional string parentId = 3; //上线id
+    repeated RebateChildInfo children = 4; //下线id
+}
+
+//返利，创建上下线
+message RebateCreateRSReq {
+    required string parentId = 1; //上线id
+    required string childId = 2; //下线id
+}
+
+message RebateCreateRSResp {
+}
+
+//返利，删除上下线
+message RebateRemoveRSReq {
+    required string parentId = 1; //上线id
+    required string childId = 2; //下线id
+}
+
+message RebateRemoveRSResp {
+}
+
+//返利，创建，修改用户返利信息
+message RebateUpdateDataReq {
+    required int32 rsLevel = 1; //向多少层下线收钱
+}
+
+message RebateUpdateDataResp {
+}
+
+
+
+
+//返利，百家乐，领取返利
+message RBaccaratGetAwardReq {
+}
+
+message RBaccaratGetAwardResp {
+    required ItemProto award = 1; //返利
+}
+
+//返利，百家乐，查询
+message RBaccaratQueryReq {
+    required string token = 1; //token
+    required string playerId = 2; //玩家id
+    required string date = 3; //日期
+    optional bool curMonth = 4; //本月
+    optional bool curYear = 5; //本年
+    optional bool playerCurMonth = 6; //某玩家本月
+}
+
+message RBaccaratQueryInfo {
+    required string playerId = 1; //玩家id
+    required float amount = 2; //金额  
+    optional string nickName = 3; //玩家名字
+}
+
+message RBaccaratQueryResp {
+    required int32 result = 1;
+    repeated RBaccaratQueryInfo info = 2;
+}
+
+message RBaccaratQueryMonthInfo {
+    required int64 date = 1;
+    required float amount = 2;
+}
+
+message RBaccaratQueryMonthResp {
+    required int32 result = 1;
+    repeated RBaccaratQueryMonthInfo info = 2;
+}
+
+//返利，百家乐，查询明细
+message RBaccaratQueryDetailReq {
+    required string token = 1; //token
+    required string childId = 2; //下线id
+    required string date = 3; //日期
+}
+
+message RBaccaratQueryDetailInfo {
+    required int64 time = 1; //时间
+    required float betAmount = 2; //金额
+    required float rebate = 3; //返利
+    optional int32 moneyBanker = 4; //下注，庄
+    optional int32 moneyFarmer = 5; //下注，闲
+    optional int32 moneyDeuce = 6; //下注，和
+    optional int32 moneyBankerPair = 7; //下注，庄对
+    optional int32 moneyFarmerPair = 8; //下注，闲对
+    optional int32 winType = 9; //结果，BaccaratWinType
+    optional bool bankerPair = 10; //是否庄对
+    optional bool farmerPair = 11; //是否闲对
+    optional int32 bankerNum = 12; //庄点数
+    optional int32 farmerNum = 13; //闲点数
+    optional float moneyDelta = 14; //结算
+}
+
+message RBaccaratQueryDetailResp {
+    required int32 result = 1;
+    repeated RBaccaratQueryDetailInfo info = 2;
+}
+
+//返利，百家乐，基础信息
+message RBaccaratGetBaseInfoReq {
+    required string token = 1; //token
+    required string playerId = 2; //玩家id
+}
+
+message RBaccaratGetBaseInfoResp {
+    required int32 result = 1;
+    required float amount = 2;  //总领取返利
+    required float yesterdayAmount = 3; //昨天的返利
+    required float todayAmount = 4; //今天的返利
+    required float award = 5; //可以领取的
+    optional int32 svipLevel = 6; //svip等级
+    optional float rechargeSum = 7; //累计充值
+    optional float childrenNum = 8; //下线数量
+    optional float feeRate = 9; //手续费比例
+    optional float svip1RechargeSum = 10; //成为VIP1需要充值总额
+    optional float svip2RechargeSum = 11; //成为vip2需要充值总额
+    optional bool svip1Check = 12; //是否满足条件升级VIP1
+    optional float monthAmount = 13; //月返利
+    optional float yearAmount = 14; //年返利
+}
+
+message RBaccaratQueryRSChildrenReq {
+    required string token = 1; //token
+    required string playerId = 2; //玩家id
+}
+
+message RBaccaratChildInfo {
+    required string playerId = 1;
+    required string nickName = 2;
+    required int64 createTime = 3;
+    required int64 bindTime = 4;
+}
+
+message RBaccaratQueryRSChildrenResp {
+    required int32 result = 1;
+    repeated RBaccaratChildInfo children = 2;
+}
+//RebatePack.proto end==================================
+
+
+
+//RoomSync.proto start==================================
+
+message GetRoomDataReq {  
+    optional bool refresh = 1;  //重新获取
+}
+
+message GetRoomDataResp {
+    optional int32 result = 1;
+    optional string roomId = 2;
+    optional MaJiangRoomProto mjRoom = 3;
+    optional BaccaratRoomProto baccaratRoom = 4;
+}
+
+message GetRoomDataHeadReq {
+    required string roomId = 1; //房间号
+}
+
+message GetRoomDataHeadResp {
+    required int32 result = 1;    //获得结果
+    optional int32 roomType = 2;     //房间类型;
+    optional MJCROption mjOption = 3;   //麻将选项
+    optional string masterId = 4;   //房主id
+    optional string masterNickName = 5; //房主昵称
+    optional string masterIcon = 6; //房主头像
+    optional BaccaratRoomProto baccaratRoom = 7; //百家乐房间信息
+}
+
+//同步，玩家加入房间
+message SyncPlayerJoin {
+    optional MJPlayerProto mjPlayer = 1;
+    optional BaccaratPlayerProto baccaratPlayer = 2;
+}
+
+//同步，玩家退出房间
+message SyncPlayerQuit {
+    optional string playerId = 1;
+}
+
+//同步，玩家掉线
+message SyncPlayerLost {
+    optional string playerId = 1;
+}
+
+//同步，强迫玩家退出，只发给强迫退出的玩家
+message SyncForceLeft {
+    optional string playerId = 1;
+    optional int32 reason = 2;      //0 被踢出，1 房间关闭
+}
+
+//输入聊天
+message PrimChat {
+    optional string chatMsg = 1;
+    optional int32 chatType = 2;
+}
+
+message SyncRoomChat {
+    optional string playerId = 1;
+    optional string nickName = 2;
+    optional int32 chatType = 3;
+    optional string chatMsg = 4;
+}
+
+//房间心跳
+message SyncHeartBeat {
+    optional string playerId = 1;   //玩家ID
+    optional string roomId = 2;     //玩家所在房间ID
+}
+
+//房间心跳服务器回应
+message SyncHeartBeatAck {
+    optional string playerId = 1;   //玩家ID
+    optional string roomId = 2;     //玩家所在房间ID
+}
+//RoomSync.proto end==================================
+
+
+
+//UserPack.proto start==================================
+//创建角色（非渠道）
+//http://host/rest/user/create
+message CreateUserReq {
+	required string account = 1;
+	required string password = 2;
+	optional string rebateParentId = 3; //推广上线用户id
+}
+
+//http return
+message CreateUserResp {
+	required int32 result = 1; //创建结果，0 成功，其他参考ErrorCode
+}
+
+//登入（非渠道）
+//http://host/rest/user/login
+message LoginReq {
+	required string account = 1;
+	optional string password = 2;
+	optional string OS = 3;
+	optional string gameVersion = 4;
+	optional string platformId = 5;	//用于区分同一platform下不同包类型的字段
+	optional string packageId = 6;	
+	optional string debugServer = 7;	//用于调试的字段
+	optional string rebateParentId = 8; //推广上线用户id
+}
+
+//登入（渠道）
+//http://host/rest/user/loginPlatform
+message LoginPlatformReq {
+	required string token = 1;
+	optional string par1 = 2;
+	optional string OS = 3;
+	optional string gameVersion = 4;
+	optional string platformId = 5;	//用于区分同一platform下不同包类型的字段
+	optional string packageId = 6;
+	optional string debugServer = 7;	//用于调试的字段
+}
+
+//http return
+message LoginResp {
+	required int32 result = 1;     //登录结果，0 成功，其他参考ErrorCode
+	optional string authToken = 2; //鉴权码
+	optional ServerInfo gameServer = 3;    //分配的游戏服务器
+	optional int32 platformErrorCode = 4; //验证时候，渠道发来的错误码
+	optional string par1 = 5;
+	optional string par2 = 6;
+	optional string refreshToken = 7;	//第三方的refreshToken，用来下次直接登陆
+	optional string serverCloseNotice = 8; //服务器关闭时提示
+}
+
+//游戏服务器列表
+message ServerInfo {
+	required string address = 1; //服务器地址
+	optional string serverId = 2; //服务器id
+}
+
+message ACAwardProto {
+	required int32 type = 1;  //类
+	required int32 id = 2;    //id
+	required int32 count = 3; //数量
+}
+
+//兑换码检测
+//http://host/rest/user/activationCodeCheck
+message ActivationCodeCheckPostData {
+	required string code = 1; //兑换码
+	required string playerId = 2; //玩家id
+	required string serverUId = 3; //服务器id
+}
+
+//http return
+message ActivationCodeCheckResult {
+	required int32 result = 1;
+	repeated ACAwardProto awards = 2; //奖励
+}
+
+//充值订单请求
+//http://host/rest/recharge/order
+message RechargeOrderPostData {
+	required string platformId = 1; //产品id
+	required int32 rechargeId = 2; //充值id
+	optional int32 rechargeType = 3;	//充值方式(1 ios官方, 2 微信)
+	optional string userId = 4;
+	optional string packageId = 5;	//做海南麻将之后新加的字段，区分不同麻将对应的不同的微信APP
+}
+
+//http return
+message RechargeOrderResult {
+	required int32 result = 1;
+	optional int32 platformErrorCode = 2; //渠道错误码
+	required string jsonPar = 3; //结果
+}
+
+//获取相关服务器信息
+message ServerInfoPostData {	
+}
+
+message AddressInfo {
+	required string key = 1; //地址名字
+	required string address = 2; //地址
+}
+
+//http return
+message ServerInfoResult {	
+	repeated AddressInfo addressList = 1; 
+	optional bool mustCheckVersion = 2;	//版本检查不可跳过(网络连接错误情况下), true 必须检查, false 可跳过	
+	optional bool openGuest = 3;		//开放游客登陆模式
+	optional bool isServerClosed = 4;   //服务器是否关闭
+	optional string serverCloseNotice = 5;  //服务器关闭时提示
+	optional string examineUrl = 6;  //审核使用的serverInfoUrl
+}
+
+//获取salt
+message GetSaltReq {
+	required string account = 1; //账号	
+	optional string platformId = 2; //平台id
+}
+
+message GetSaltResp {
+	required int32 result = 1;
+	optional string randomSalt = 2; //随机salt
+	optional string staticSalt = 3; //静态salt
+}
+
+//重置密码
+message ResetPasswordReq {
+	required string account = 1; //账号	
+	optional string platformId = 2; //平台id
+	required string oldPassword = 3; //旧密码
+	required string newPassword = 4; //新密码
+}
+
+message ResetPasswordResp {
+	required int32 result = 1;
+}
+
+//用验证码重置密码
+message ResetPasswordByAuthCodeReq {
+	required string account = 1; //账号	
+	optional string platformId = 2; //平台id
+	required string smsAuthCode = 3; //验证码
+	required string newPassword = 4; //新密码
+}
+
+message ResetPasswordByAuthCodeResp {
+	required int32 result = 1;
+}
+
+
+//获取短信验证码
+message SMSGetAuthCodeReq {
+	required string phoneNumber = 1; //电话号码
+	optional bool useNewNumber = 2; //已经注册的电话号码不能再使用
+}
+
+message SMSGetAuthCodeResp {
+	required int32 result = 1;
+	optional int32 leftTime = 2; //剩余时间
+}
+
+//短信验证版创建账号
+message SMSCreateUserReq {
+	required string phoneNumber = 1; //电话号码
+	required string password = 2; //密码
+    required string smsAuthCode = 3; //验证码	
+    optional string rebateParentId = 4; //返利上线玩家id
+	optional string platformId = 5; //渠道id
+	optional string packageId = 6; //包id
+}
+
+message SMSCreateUserResp {
+	required int32 result = 1; //创建结果，0 成功，其他参考ErrorCode
+}
+
+//短信验证版登录
+message SMSLoginReq {
+	required string phoneNumber = 1; //电话号码,也就是账号
+	required string hashPassword = 2; //密码
+	optional string OS = 3;
+	optional string gameVersion = 4;
+	optional string platformId = 5;	//用于区分同一platform下不同包类型的字段
+	optional string packageId = 6; //包id
+	optional string debugServer = 7; //用于调试的字段
+}
+
+//http return
+message SMSLoginResp {
+	required int32 result = 1;     //登录结果，0 成功，其他参考ErrorCode
+	optional string authToken = 2; //鉴权码
+	optional ServerInfo gameServer = 3;    //分配的游戏服务器
+	optional int32 platformErrorCode = 4; //验证时候，渠道发来的错误码
+	optional string par1 = 5;
+	optional string par2 = 6;
+	optional string serverCloseNotice = 7; //服务器关闭时提示
+}
+
+//输入验证码，并绑定手机
+message SMSAuthBindReq {
+	required string smsAuth = 1;	//短信验证码
+	optional string realName = 2;	//真实姓名
+}
+//输入验证码，并绑定手机的响应信息
+message SMSAuthBindResp {
+	required int32 result = 1;		//绑定结果
+	optional string bindPhone = 2;	//绑定的电话号码
+}
+//UserPack.proto end==================================
+
+
+
+//VersionPack.proto start==================================
+//版本检查响应消息
+message CheckVersionResp {
+    required bool result = 1;
+    optional string currentVersion = 2; //最新版本
+    optional string baseUrl = 3;        //下载文件的基础版本
+    repeated BundleProto changes = 4;   //版本文件变化
+    optional bool forceUpdate = 5;      //需要强制更新
+    optional string forceURI = 6;       //强更地址 
+}
+
+//版本文件变化
+message BundleProto {
+    required int32 changeType = 1;    //变化类型枚举： 0 -> Add, 1 -> Update, 2 -> Delete
+    required string name = 2;         //bundle的文件名
+    required int32 fileLength = 3;    //文件长度
+    optional string dlUrl = 4;        //可选字段,文件下载地址, 如果使用CDN，文件下载地址不再通过baseUrl计算，而是单独计算,预先在客户端留下相关功能
+}
+
+
+//单条广告信息
+message AdvertisementInfoPorto {
+    required int32 id = 1;
+    required string picUrl = 2;  //图片下载地址 
+    required string uiName = 3;  //ui名字
+}
+
+//所有广告信息
+message AdvertisementInfoResp {
+    repeated AdvertisementInfoPorto info = 1; //广告信息
+}
+
+//VersionPack.proto end==================================
+
+
+
