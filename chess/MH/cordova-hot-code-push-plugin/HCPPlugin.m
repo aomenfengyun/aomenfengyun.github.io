@@ -530,9 +530,7 @@ static NSString *const DEFAULT_STARTING_PAGE = @"index.html";
     NSError *error = notification.userInfo[kHCPEventUserInfoErrorKey];
     NSLog(@"Error during update: %@", [error underlyingErrorLocalizedDesription]);
     
-    NSLog(@"HAHAHAHAHAhahahahahahaha");
     if(_currCfg<2){
-        NSLog(@"heheheheheheheheheheheh");
         _currCfg++;
         [self _fetchUpdate:nil withOptions:nil];
         return;

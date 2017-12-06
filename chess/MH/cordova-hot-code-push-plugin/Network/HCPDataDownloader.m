@@ -21,10 +21,7 @@
     NSString *timeString = [NSString stringWithFormat:@"%.0f", time];
 	NSString *str1 = [url absoluteString];
     str1 = [NSString stringWithFormat:@"%@?t=%@", str1, timeString];
-    NSLog(@"%@",str1);
     NSURL *turl = [NSURL URLWithString:str1];
-    NSString *str2 = [turl absoluteString];
-    NSLog(@"%@",str2);
     
     NSURLSessionDataTask* dowloadTask = [session dataTaskWithURL:turl completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         block(data, error);
