@@ -29,6 +29,7 @@
     NSString *_defaultCallbackID;
     BOOL _isPluginReadyForWork;
     int _currCfg;
+    NSURL *_currURL;
     HCPPluginInternalPreferences *_pluginInternalPrefs;
     NSString *_installationCallback;
     NSString *_downloadCallback;
@@ -169,10 +170,6 @@ static NSString *const DEFAULT_STARTING_PAGE = @"index.html";
         return NO;
     }
     
-    if(_currCfg>2){
-        return NO;
-    }
-    
     if (!options && self.defaultFetchUpdateOptions) {
         options = self.defaultFetchUpdateOptions;
     }
@@ -190,16 +187,17 @@ static NSString *const DEFAULT_STARTING_PAGE = @"index.html";
 //    NSLog(@"%@",str2);
 	
 //    request.configURL = options.configFileURL ? options.configFileURL : _pluginXmlConfig.configUrl;
-    
-    if(options.configFileURL){
+    if( _currURL){
+        request.configURL = _currURL;
+    }else if(options.configFileURL){
         request.configURL = options.configFileURL;
     }else{
         NSArray *array = [[NSArray alloc] initWithObjects:_pluginXmlConfig.configUrl,_pluginXmlConfig.configUrl2,_pluginXmlConfig.configUrl3,nil];
 //        int r = arc4random() % [array count];
-        NSURL *tmpConfigUrl = [array objectAtIndex:_currCfg];
-//        NSLog(@"HAHAHAHAHA%@\n%@\n%@\n%@",[tmpConfigUrl absoluteString],[_pluginXmlConfig.configUrl absoluteString],[_pluginXmlConfig.configUrl2 absoluteString],[_pluginXmlConfig.configUrl3 absoluteString]);
-        request.configURL = tmpConfigUrl;
+        request.configURL = [array objectAtIndex:_currCfg];
     }
+    
+    NSLog(@"------------configurl---------\n%@\n%@\n%@\n%@\n%@\n%@",[request.configURL absoluteString],[_currURL absoluteString],[options.configFileURL absoluteString],[_pluginXmlConfig.configUrl absoluteString],[_pluginXmlConfig.configUrl2 absoluteString],[_pluginXmlConfig.configUrl3 absoluteString]);
     
     request.requestHeaders = options.requestHeaders;
     request.currentWebVersion = _pluginInternalPrefs.currentReleaseVersionName;
@@ -533,7 +531,6 @@ static NSString *const DEFAULT_STARTING_PAGE = @"index.html";
     if(_currCfg<2){
         _currCfg++;
         [self _fetchUpdate:nil withOptions:nil];
-        return;
     }
     
     // send notification to the associated callback
@@ -765,6 +762,9 @@ static NSString *const DEFAULT_STARTING_PAGE = @"index.html";
     NSDictionary *options = command.arguments[0];
     [_pluginXmlConfig mergeOptionsFromJS:options];
     // TODO: store them somewhere?
+    _currCfg = 3;
+    _currURL = [NSURL URLWithString:options[@"config-file"]];
+//    NSLog(@"chcp-configure%@",options[@"config-file"]);
     
     CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
